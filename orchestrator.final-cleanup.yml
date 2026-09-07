@@ -1,0 +1,150 @@
+# Final Technical Cleanup — Orchestrator Config
+# Project: Hauzan Portfolio (React + Vite + Tailwind lokal)
+# Prinsip utama: TANPA MENGUBAH DESAIN. Hanya cleanup teknis + verifikasi.
+# Referensi visual (jangan diubah): code.html (versi Stitch) + DESIGN.md
+# Hasil React harus tetap sama secara visual dengan code.html.
+
+version: 1
+goal: Build & preview tanpa error, kode bersih, Showcase tidak rusak, responsif, performant, SEO + path GitHub Pages benar, Tailwind non-CDN, .gitignore rapi, visual regression lolos.
+
+global_constraints:
+  - DILARANG mengubah desain: warna, font, spacing, layout, radius, copywriting, urutan section.
+  - Hanya boleh: hapus dead code/deps, perbaiki bug teknis, rapikan path/SEO/perf/a11y non-visual.
+  - Setiap perubahan harus bisa di-revert dan wajib verifikasi `npm run build`.
+  - Jika ragu antara "bersihkan" vs "ubah tampilan", pilih JANGAN ubah.
+  - Base path GitHub Pages: `/portfolio/` (lihat vite.config.js + package.json homepage).
+
+workflow:
+  # Phase 1 boleh paralel (A-E independen)
+  phase_1_parallel: [agent-a, agent-b, agent-c, agent-d, agent-e]
+  # Phase 2 setelah semua Phase 1 selesai
+  phase_2_sequential: [agent-f]
+  merge_check:
+    - npm run build
+    - npm run preview -- --port 5173
+    - tidak ada error / warning fatal
+    - git diff hanya menyentuh file teknis, tidak ada perubahan visual
+
+agents:
+
+  - id: agent-a
+    name: build-hygiene
+    role: Build, deps, Tailwind CDN, gitignore
+    files:
+      - package.json
+      - package-lock.json
+      - vite.config.js
+      - tailwind.config.js
+      - postcss.config.js
+      - index.html
+      - src/styles/global.css
+      - src/main.jsx
+      - .gitignore
+    tasks:
+      - 1. Verifikasi `npm run build` dan `npm run preview` lolos tanpa error. Catat warning.
+      - 2. Pastikan Tailwind TIDAK pakai CDN: tidak ada `cdn.tailwindcss.com`, `@tailwindcss/browser`, `unpkg`, `script src=...tailwind` di index.html / src. Tailwind harus via `tailwindcss@3.4.17` + postcss + `src/styles/global.css` (`@tailwind base/components/utilities`).
+      - 3. Audit dependency tak terpakai: cek import di `src/**/*.{js,jsx}` vs `package.json`. Usulkan hapus yang tak dipakai (jangan hapus tanpa konfirmasi jika ragu).
+      - 4. Rapikan `.gitignore`: pastikan ada `node_modules`, `dist`, `dist-ssr`, `*.local`, `.DS_Store`, `*.log`, `npm-debug.log*`, `.vscode/*`, `.idea`. Jangan commit `dist/`.
+    done_when:
+      - build + preview sukses
+      - bukti grep "cdn.tailwind" kosong
+      - daftar deps dihapus / dipertahankan dengan alasan
+
+  - id: agent-b
+    name: showcase-functional
+    role: Showcase carousel, CTA, keyboard, swipe, a11y — tanpa ubah visual
+    files:
+      - src/sections/Showcase.jsx
+      - src/hooks/useCoverflow.js
+      - src/data/showcaseData.js
+      - src/components/Icons.jsx
+    tasks:
+      - 1. Regression carousel: prev/next button, dots/indicator, `select(i)`, circular wrap, index `01/05` update.
+      - 2. CTA: kartu inaktif diklik = center + fokus, TIDAK navigasi. CTA kartu aktif = navigasi native. Pastikan `tabindex=-1` di CTA kartu non-aktif dan `CATEGORY_DESTINATIONS` benar.
+      - 3. Keyboard: ArrowLeft/ArrowRight hanya saat fokus di dalam carousel, Enter/Space aktivasi kartu, roving tabindex + `aria-current` + `aria-label` benar, focus pindah ke kartu target.
+      - 4. Swipe: FSM `idle|possible-tap|horizontal-swipe|vertical-scroll`, threshold swipe 40px / scroll 15px, `touchmove` non-passive + `preventDefault` hanya saat horizontal, click-suppression capture-phase + fallback 300ms, vertical scroll tetap native.
+      - 5. Cek cleanup: semua listener (`click capture`, `keydown`, `touchstart/move/end/cancel`, `resize` debounce 100ms) di-remove di cleanup + clear timeout.
+    done_when:
+      - semua interaksi di atas lolos manual / script test
+      - tidak ada listener bocor, tidak ada perubahan geometry/transform/opacity/blur
+
+  - id: agent-c
+    name: responsive-a11y
+    role: Responsif + accessibility non-visual
+    files:
+      - src/sections/*.jsx
+      - src/components/*.jsx
+      - src/styles/global.css
+      - index.html
+    tasks:
+      - 1. Cek breakpoint 360 / 640 / 768 / 1024 / 1280 / 1440: tidak ada overflow-x, kartu coverflow tidak kepotong parah, controls + dots tidak bertumpuk. Step bucket `180/220/260` + `farStep 310/380/440` tetap.
+      - 2. A11y: `role=region`, `aria-roledescription=carousel/slide`, `aria-label`, `aria-live=polite` pada index, kontras teks, `:focus-visible` terlihat, semua button ada `aria-label`, image punya `alt` (jika ada).
+      - 3. `prefers-reduced-motion: reduce` tetap berfungsi (tanpa rotateY/blur, hanya opacity fade).
+      - 4. DILARANG ubah ukuran font/spacing/warna untuk "memperbaiki" responsif. Hanya boleh perbaiki overflow/clip/focus yang rusak.
+    done_when:
+      - checklist viewport + screenshot tiap breakpoint
+      - tidak ada error axe/manual a11y yang kritis
+
+  - id: agent-d
+    name: performance
+    role: Event listener, DOM update, animasi, image & font loading
+    files:
+      - src/hooks/useCoverflow.js
+      - src/sections/*.jsx
+      - src/styles/global.css
+      - index.html
+      - public/assets/**/*
+    tasks:
+      - 1. Event listener: pastikan `passive:true` untuk touchstart/touchend/resize, `passive:false` hanya touchmove. Resize debounce 100ms. Tidak ada listener duplikat (StrictMode double-effect aman).
+      - 2. DOM update: geometry coverflow tetap imperatif via `updateCarousel()`, hindari re-render React berlebihan. `querySelector('h3')` / `.card-action-link` maksimal 1x per kartu per pass bila memungkinkan.
+      - 3. Animasi: `transform 450ms cubic-bezier(0.25,1,0.5,1)`, `will-change: transform,opacity,filter` hanya di `.coverflow-card-item`. Jangan tambah animasi baru.
+      - 4. Image/font: cek `public/assets/images` & `videos` kosong — pastikan tidak ada `<img src=404>` / video nyangkut. Font Google Fonts wajib `preconnect` + `display=swap` (sudah ada, jangan duplikat). Usulkan `loading=lazy` / `decoding=async` hanya jika tidak menggeser layout.
+    done_when:
+      - tidak ada jank / listener bocor
+      - tidak ada request 404 image/video/font
+      - Lighthouse perf tidak turun dari baseline
+
+  - id: agent-e
+    name: seo-ghpages
+    role: SEO + path asset GitHub Pages
+    files:
+      - index.html
+      - vite.config.js
+      - package.json
+      - public/**/*
+      - dist/index.html
+    tasks:
+      - 1. SEO: `lang=id`, title, description, canonical `https://brohauzan.github.io/portfolio/`, OG + Twitter card, `og:image` valid (bukan URL googleusercontent kadaluarsa bila memungkinkan diganti aset lokal).
+      - 2. Favicon: `index.html` referensi `/favicon.ico` tapi file tidak ada di `public/` — verifikasi dan perbaiki (tambah `public/favicon.ico` ATAU ubah href ke `%BASE_URL%`/relative, jangan 404).
+      - 3. Path GitHub Pages: `vite.config.js base=/portfolio/`, script `/src/main.jsx`, tidak ada path absolut `/assets/...` atau `/src/...` yang bocor di build. Cek `dist/index.html` + `dist/assets/` setelah build. `public/assets` kosong → pastikan tidak ada referensi mati.
+      - 4. Pastikan `code.html` (referensi Stitch) TIDAK ikut di-build / di-deploy. Tetap sebagai arsip lokal saja.
+    done_when:
+      - `npm run build` lalu cek dist: tidak ada 404, base path benar
+      - skor SEO tidak turun, tidak ada meta duplikat
+
+  - id: agent-f
+    name: visual-regression
+    role: Visual regression React vs Stitch (terakhir, setelah A-E)
+    depends_on: [agent-a, agent-b, agent-c, agent-d, agent-e]
+    files:
+      - code.html
+      - DESIGN.md
+      - dist/**/*
+      - src/**/*
+    tasks:
+      - 1. Jalankan `npm run build && npm run preview`. Bandingkan hasil React (preview) vs `code.html` section-per-section: Hero, About, Stats, Showcase, Journey, Testimonials, Tools, Footer.
+      - 2. Bandingkan: urutan section (Hero→About→Stats→Showcase→Journey→Testimonials→Tools→Footer), tipografi (Fraunces/Geist), warna cream `#fbfbf9` / ink `#0f172a` / border `#e2e2dc`, radius, hairline 1px, spacing section.
+      - 3. Khusus Showcase: geometry kartu aktif/skala/opacity/blur harus identik dengan Stitch. Jika beda, LAPORKAN saja — jangan "fix" dengan mengubah visual.
+      - 4. Output: tabel PASS/DIFF per section + screenshot side-by-side + daftar file yang menyebabkan diff (jika ada).
+    done_when:
+      - laporan visual regression lengkap
+      - nol perubahan visual yang tidak disengaja. Jika ada diff, list jelas untuk approval user.
+
+verification:
+  - npm run build
+  - npm run preview
+  - grep bukti: tidak ada `cdn.tailwindcss.com`
+  - dist/ tidak mengandung `code.html`
+  - Showcase: klik, dots, keyboard, swipe, CTA, focus, reduced-motion
+  - responsif: 360, 768, 1024, 1440 tanpa overflow
+  - tidak ada 404 asset / favicon / font
