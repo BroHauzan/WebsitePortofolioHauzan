@@ -6,9 +6,9 @@ import toolCategories from '../data/toolsData';
 
 export default function Tools() {
   return (
-    <section className="border-t border-cream-border py-20 sm:py-32 max-w-7xl mx-auto px-6 sm:px-10 scroll-mt-20" id="tools">
+    <section className="border-t border-cream-border py-20 sm:py-32 max-w-7xl mx-auto px-6 sm:px-10" id="tools">
       <div className="mb-12">
-        <span className="text-[11px] sm:text-xs font-semibold tracking-[0.15em] uppercase text-ink-muted block mb-3">Tools I Use</span>
+        <span className="text-[11px] sm:text-xs font-semibold tracking-eyebrow uppercase text-ink-muted block mb-3">Tools I Use</span>
         <h2 className="font-display text-3xl sm:text-5xl font-medium tracking-tightHeadline text-ink-primary">
           The <span className="font-em text-slate-700">tools behind the work.</span>
         </h2>
@@ -20,7 +20,7 @@ export default function Tools() {
         {toolCategories.map((category) => (
           <div key={category.label} className="space-y-6">
             <div className="bg-white border border-cream-border rounded-xl p-6">
-              <h3 className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block mb-3">{category.label}</h3>
+              <h3 className="text-[11px] font-mono uppercase tracking-wider text-ink-muted block mb-3">{category.label}</h3>
               <div className="space-y-3">
                 {category.tools.map((tool, toolIdx) => (
                   <div key={tool.name} className={`flex items-center justify-between ${toolIdx < category.tools.length - 1 ? 'border-b border-cream-border pb-2' : ''}`}>

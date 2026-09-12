@@ -9,7 +9,17 @@
 
 html {
   scroll-padding-top: 5rem;
-  scroll-behavior: smooth;
+}
+
+/*
+  Smooth scrolling only when the user has not asked for reduced motion.
+  `scroll-behavior: smooth` is a motion effect, so it must opt in via
+  `prefers-reduced-motion: no-preference` instead of applying unconditionally.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -30,12 +40,27 @@ body {
   font-weight: 400;
 }
 
-/* Light translucent glass navbar */
+@layer components {
+  /*
+    Shared keyboard focus treatment for interactive elements.
+    Keep the focus indicator uniform across Navbar / Footer / Showcase
+    instead of repeating the long focus-visible utility chain per element.
+  */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2;
+  }
+}
+
+/*
+  Light translucent glass navbar.
+  Border uses #e2e2dc to match the `cream.border` design token, so the
+  navbar hairline stays identical to every other cream-border surface.
+*/
 .nav-frosted-light {
   background: rgba(251, 251, 249, 0.88);
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border-bottom: 1px solid #e5e5df;
+  border-bottom: 1px solid #e2e2dc;
 }
 
 /* 3D Coverflow Stage Styles */

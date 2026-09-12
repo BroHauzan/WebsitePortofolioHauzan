@@ -1,7 +1,18 @@
 // ============================================================
 // SHOWCASE DATA — 5 coverflow categories.
-// Values preserved verbatim from the original code.html markup.
-// Placeholder visuals: keep the structure; swap `visual.src` later.
+//
+// MEDIA: kategori ini belum punya aset media asli; kartu hanya merender
+// ikon kategori + metadata teks. Untuk menambahkan media asli nanti:
+//   1) taruh file di `public/assets/images/<file>.jpg` atau
+//      `public/assets/videos/<file>.mp4`;
+//   2) tambahkan field `imageSrc` (atau `videoSrc`) berisi path publik,
+//      mis. `imageSrc: '/assets/images/works-photography.jpg'`;
+//   3) render di Showcase.jsx pada frame rasio 16/10 yang sudah ada, mis.
+//      <img src={category.imageSrc} loading="lazy" width={800} height={500}
+//           alt={category.title} className="w-full h-full object-cover" />
+//      (rasio frame saat ini di-hardcode `aspect-[16/10]` di Showcase.jsx,
+//      jadi tidak perlu field aspect per kategori).
+// Jangan simpan field metadata yang tidak dirender.
 // ============================================================
 
 export const CATEGORY_DESTINATIONS = {
@@ -15,7 +26,6 @@ export const CATEGORY_DESTINATIONS = {
 const showcaseCategories = [
   {
     key: 'photography',
-    index: 0,
     title: 'Photography',
     subtitle: 'Stage & Portrait Coverage',
     visualMeta: '35mm Prime · High School Live',
@@ -26,15 +36,9 @@ const showcaseCategories = [
     tools: 'Lightroom & Pixieset',
     ctaLabel: 'Buka Arsip Visual →',
     ctaHref: CATEGORY_DESTINATIONS.photography,
-    visual: {
-      type: 'image',
-      src: null, // future: '/assets/images/works-photography.jpg'
-      aspect: '16/10',
-    },
   },
   {
     key: 'videography',
-    index: 1,
     title: 'Videography',
     subtitle: 'Cinematic Recaps & Aftermovie',
     visualMeta: '4K Cine · Multi-cam Rig',
@@ -45,15 +49,9 @@ const showcaseCategories = [
     tools: 'Premiere & DaVinci',
     ctaLabel: 'Buka Rekaman Pentas →',
     ctaHref: CATEGORY_DESTINATIONS.videography,
-    visual: {
-      type: 'video',
-      src: null, // future: '/assets/videos/works-videography.mp4'
-      aspect: '16/10',
-    },
   },
   {
     key: 'motion',
-    index: 2,
     title: 'Motion Graphic',
     subtitle: 'VFX, Bumper & Typography',
     visualMeta: '60 FPS · Kinetic Motion',
@@ -64,15 +62,9 @@ const showcaseCategories = [
     tools: 'After Effects & Blender',
     ctaLabel: 'Lihat Showcase Kinetik →',
     ctaHref: CATEGORY_DESTINATIONS.motion,
-    visual: {
-      type: 'video',
-      src: null, // future: '/assets/videos/works-motion.mp4'
-      aspect: '16/10',
-    },
   },
   {
     key: 'shortfilm',
-    index: 3,
     title: 'Short Film',
     subtitle: 'Narrative Direction & Film',
     visualMeta: '2.39:1 Anamorphic · Student Fest',
@@ -83,15 +75,9 @@ const showcaseCategories = [
     tools: 'Director & DP',
     ctaLabel: 'Tonton Film Pendek →',
     ctaHref: CATEGORY_DESTINATIONS.shortfilm,
-    visual: {
-      type: 'video',
-      src: null, // future: '/assets/videos/works-shortfilm.mp4'
-      aspect: '16/10',
-    },
   },
   {
     key: 'webdev',
-    index: 4,
     title: 'Web Development',
     subtitle: 'Interactive Editorial Web',
     visualMeta: 'HTML5 · Tailwind · JS',
@@ -102,11 +88,6 @@ const showcaseCategories = [
     tools: 'Tailwind & Vanilla JS',
     ctaLabel: 'Buka Demo Sistem →',
     ctaHref: CATEGORY_DESTINATIONS.webdev,
-    visual: {
-      type: 'image',
-      src: null, // future: '/assets/images/works-webdev.jpg'
-      aspect: '16/10',
-    },
   },
 ];
 

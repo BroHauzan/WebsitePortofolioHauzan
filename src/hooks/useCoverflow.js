@@ -6,14 +6,23 @@ import { CATEGORY_DESTINATIONS } from '../data/showcaseData';
 // implementation from code.html.
 //
 // The carousel stays DOM-driven on purpose: the touch gesture FSM
-// needs non-passive native listeners (React synthetic touchmove
-// cannot preventDefault), and the card geometry is applied
+// needs a non-passive native touchmove listener (React synthetic
+// touchmove cannot preventDefault), and the card geometry is applied
 // imperatively for pixel-identical transitions.
+//
+// touchmove trade-off (perf audit): the listener stays non-passive
+// because preventing vertical scroll bleed during a horizontal swipe
+// is a deliberate behavior of this carousel, and the move handler now
+// returns immediately for `idle` / `vertical-scroll` states so it does
+// the minimum possible work per event. A fully passive listener would
+// require `touch-action` CSS on the stage (global.css — not owned here).
 //
 // Preserved behaviors:
 // - circular diff math (step/farStep/scale/opacity/blur/rotateY/z/translateZ)
 // - responsive step buckets: mobile <640 / tablet 640-1023 / desktop >=1024
 // - roving tabindex + aria-current + aria-label per card
+// - aria-hidden + inert on cards further than one step from the active
+//   card (they render at 0.32 opacity and must not be reachable)
 // - capture-phase click suppression after swipe (300ms fallback timeout)
 // - touch FSM: idle | possible-tap | horizontal-swipe | vertical-scroll
 // - scoped ArrowLeft/ArrowRight window navigation with post-nav focus
@@ -89,6 +98,14 @@ export default function useCoverflow({
       let shadow =
         '0 25px 50px -12px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.08)';
 
+      // A11y: only the active card and its direct neighbours stay in
+      // the accessibility tree and can receive pointer/tab focus.
+      // Cards further away are blurred to 0.32 opacity, so an
+      // accidental click on them is not prevented by the visual
+      // change — they are hidden from assistive tech and made inert.
+      // `inert` also removes the card's CTA link from the tab order.
+      const isNearActive = distance <= 1;
+
       const catKey = card.dataset.category;
       const ctaLink = card.querySelector('.card-action-link');
       if (ctaLink && catKey && CATEGORY_DESTINATIONS[catKey]) {
@@ -147,6 +164,21 @@ export default function useCoverflow({
         if (ctaLink) {
           ctaLink.setAttribute('tabindex', '-1');
         }
+      }
+
+      // A11y attributes are applied AFTER active/distance resolution so
+      // the active card and its neighbours always clear them:
+      // - far cards (distance > 1) leave the a11y tree and become inert
+      //   (no pointer hit, no tab stop on their link) while they are
+      //   rendered at 0.32 opacity.
+      // - active + neighbours are restored, otherwise the active card
+      //   would stay permanently dead once it had been far away.
+      if (isNearActive) {
+        card.removeAttribute('aria-hidden');
+        card.removeAttribute('inert');
+      } else {
+        card.setAttribute('aria-hidden', 'true');
+        card.setAttribute('inert', '');
       }
 
       if (reduced) {
@@ -315,7 +347,14 @@ export default function useCoverflow({
     };
 
     const onTouchMove = (e) => {
-      if (gestureState === 'idle') return;
+      // Fast path: nothing to do unless a gesture is actually in
+      // progress. `vertical-scroll` is terminal for this gesture (native
+      // scrolling owns it) and `idle` means no touch we care about —
+      // bailing out immediately keeps this non-passive handler as cheap
+      // as possible so it does not delay the compositor fast path.
+      if (!gestureState || gestureState === 'idle' || gestureState === 'vertical-scroll') {
+        return;
+      }
 
       currentX = e.touches[0].clientX;
       currentY = e.touches[0].clientY;
@@ -328,11 +367,6 @@ export default function useCoverflow({
         if (e.cancelable) {
           e.preventDefault();
         }
-        return;
-      }
-
-      if (gestureState === 'vertical-scroll') {
-        // Allow native document scrolling unimpeded
         return;
       }
 

@@ -8,13 +8,13 @@ const skills = ['Photography', 'Videography', 'Motion Graphic', 'Short Film', 'W
 
 export default function Hero() {
   return (
-    <section className="max-w-7xl mx-auto px-6 sm:px-10 pb-20 sm:pb-28 scroll-mt-24" id="home">
+    <section className="max-w-7xl mx-auto px-6 sm:px-10 pb-20 sm:pb-28" id="home">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
         {/* Left Column: Typography Lockup with Eyebrow */}
         <div className="lg:col-span-5 flex flex-col justify-center">
           {/* Eyebrow label positioned strictly above heading */}
           <div className="mb-4">
-            <span className="text-[11px] sm:text-xs font-semibold tracking-[0.15em] uppercase text-ink-muted">
+            <span className="text-[11px] sm:text-xs font-semibold tracking-eyebrow uppercase text-ink-muted">
               Ketua Media Center SMAN 1 Lumajang &amp; OSIS IT Pubdok
             </span>
           </div>
@@ -30,7 +30,7 @@ export default function Hero() {
           </p>
           {/* Skills list in editorial plain text separated by clean thin vertical lines */}
           <div className="pt-6 border-t border-cream-border">
-            <p className="text-xs uppercase tracking-[0.14em] font-semibold text-ink-muted mb-3">Bidang Keahlian</p>
+            <p className="text-xs uppercase tracking-eyebrow font-semibold text-ink-muted mb-3">Bidang Keahlian</p>
             <div className="flex flex-wrap items-center gap-y-2 text-xs sm:text-[13px] text-ink-secondary font-medium">
               {skills.map((skill, i) => (
                 <span key={skill} className="flex items-center">
@@ -47,12 +47,12 @@ export default function Hero() {
         <div className="lg:col-span-7">
           <div className="relative group bg-cream-card rounded-2xl overflow-hidden border border-cream-border">
             <div aria-label="Frame karya sinematik Hauzan Naufal di SMAN 1 Lumajang" className="aspect-[16/9] w-full overflow-hidden bg-slate-100" role="img">
-              <div className="w-full h-full bg-[#f4f4f0] flex flex-col items-center justify-center p-6 text-center border border-dashed border-[#d1d1ca] relative overflow-hidden select-none">
-                <div className="w-12 h-12 rounded-full border border-[#c6c6cd] flex items-center justify-center text-slate-500 mb-3 bg-white/70">
-                  {CameraIcon}
+              <div className="w-full h-full bg-cream-subtle flex flex-col items-center justify-center p-6 text-center border border-dashed border-cream-border relative overflow-hidden select-none">
+                <div className="w-12 h-12 rounded-full border border-[#c6c6cd] flex items-center justify-center text-slate-600 mb-3 bg-white/70">
+                  <CameraIcon />
                 </div>
                 <span className="font-display font-medium text-slate-800 text-sm sm:text-base tracking-tight mb-1">Placeholder Foto / Frame Karya Sinematik</span>
-                <span className="text-[11px] font-mono uppercase tracking-[0.14em] text-slate-500">16:9 · 35mm Lumajang Documenter</span>
+                <span className="text-[11px] font-mono uppercase tracking-eyebrow text-slate-600">16:9 · 35mm Lumajang Documenter</span>
               </div>
             </div>
             {/* Caption Strip directly beneath image frame */}

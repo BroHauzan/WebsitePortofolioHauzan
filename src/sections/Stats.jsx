@@ -31,10 +31,10 @@ const metricCards = [
 
 export default function Stats() {
   return (
-    <section className="border-t border-cream-border py-20 sm:py-28 max-w-7xl mx-auto px-6 sm:px-10 scroll-mt-20" id="stats">
+    <section className="border-t border-cream-border py-20 sm:py-28 max-w-7xl mx-auto px-6 sm:px-10" id="stats">
       {/* Eyebrow & Display Heading Lockup */}
       <div className="mb-12">
-        <span className="text-[11px] sm:text-xs font-semibold tracking-[0.15em] uppercase text-ink-muted block mb-3">
+        <span className="text-[11px] sm:text-xs font-semibold tracking-eyebrow uppercase text-ink-muted block mb-3">
           Arsip Liputan &amp; Rekam Jejak
         </span>
         <h2 className="font-display text-3xl sm:text-5xl font-medium tracking-tightHeadline text-ink-primary">
@@ -45,7 +45,7 @@ export default function Stats() {
         {/* Left Hero Stat Card (Clean 1px border, 0 shadow, pure white card) */}
         <div className="lg:col-span-6 bg-white border border-cream-border rounded-xl p-8 sm:p-12 flex flex-col justify-between">
           <div>
-            <span className="text-[11px] font-semibold tracking-[0.15em] uppercase text-ink-muted block mb-4">Total Dokumentasi &amp; Produksi</span>
+            <span className="text-[11px] font-semibold tracking-eyebrow uppercase text-ink-muted block mb-4">Total Dokumentasi &amp; Produksi</span>
             <div className="font-display text-7xl sm:text-8xl lg:text-9xl font-semibold text-ink-primary tracking-tight leading-none mb-6">
               100+
             </div>
@@ -68,7 +68,7 @@ export default function Stats() {
             <div key={card.title} className="bg-white border border-cream-border rounded-xl p-6 sm:p-7 flex flex-col justify-center">
               <div className="flex items-baseline justify-between mb-2">
                 <span className="font-display text-3xl sm:text-4xl font-semibold text-ink-primary">{card.value}</span>
-                <span className="text-xs font-mono uppercase tracking-wider text-slate-500">{card.meta}</span>
+                <span className="text-xs font-mono uppercase tracking-wider text-slate-600">{card.meta}</span>
               </div>
               <h3 className="text-xs uppercase tracking-[0.12em] font-semibold text-ink-secondary mb-1">{card.title}</h3>
               <p className="text-xs text-ink-muted leading-relaxed">{card.description}</p>

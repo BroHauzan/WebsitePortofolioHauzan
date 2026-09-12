@@ -2,7 +2,15 @@
 // FLOATING PERSISTENT NAV (School Website Editorial Style)
 // Anchors preserved exactly: #home #about #stats #works #journey
 // #testimonials #tools #contact
+//
+// Responsive behavior:
+// - >= 768px (md): the original inline link row + CTA, unchanged.
+// - < 768px: the inline row is hidden, so this file owns one
+//   explicit drawer plus a 44x44px hamburger trigger, so all six
+//   anchors and the CTA stay reachable (WCAG 2.5.8 target size).
 // ============================================================
+
+import { useEffect, useState } from 'react';
 
 const navLinks = [
   { href: '#about', label: 'Cerita' },
@@ -14,31 +22,114 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const [open, setOpen] = useState(false);
+
+  // Close on Escape, and lock background scroll while the drawer is open.
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
+  // Collapse the drawer as soon as the layout switches to the desktop
+  // nav (>= 768px) so it can never linger open over the desktop view.
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)');
+    const handleChange = (event) => {
+      if (event.matches) setOpen(false);
+    };
+
+    mq.addEventListener('change', handleChange);
+    return () => mq.removeEventListener('change', handleChange);
+  }, []);
+
   return (
     <header className="fixed top-0 inset-x-0 z-50 nav-frosted-light transition-all duration-300">
       <div className="max-w-7xl mx-auto px-6 sm:px-10 h-16 sm:h-20 flex items-center justify-between">
-        <a aria-label="Beranda Hauzan Naufal" className="flex items-center gap-2.5 text-[#0f172a] hover:opacity-80 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2 rounded" href="#home">
+        <a aria-label="Beranda Hauzan Naufal" className="flex items-center gap-2.5 text-ink-primary hover:opacity-80 transition-opacity focus-ring rounded" href="#home">
           <span className="font-display font-semibold text-lg tracking-tight">Hauzan Naufal</span>
-          <span className="hidden sm:inline-block text-[11px] uppercase tracking-wider text-ink-muted px-2 py-0.5 border border-cream-border rounded-full bg-[#f4f4f0]">Pubdok</span>
+          <span className="hidden sm:inline-block text-[11px] uppercase tracking-wider text-ink-muted px-2 py-0.5 border border-cream-border rounded-full bg-cream-subtle">Pubdok</span>
         </a>
-        {/* Clean Minimal Nav Links */}
+        {/* Clean Minimal Nav Links (desktop only — unchanged behavior) */}
         <nav aria-label="Navigasi Utama" className="hidden md:flex items-center space-x-8 lg:space-x-10 text-xs uppercase tracking-[0.12em] font-medium text-ink-muted">
           {navLinks.map((link) => (
-            <a key={link.href} className="hover:text-ink-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2 rounded" href={link.href}>
+            <a key={link.href} className="hover:text-ink-primary transition-colors focus-ring rounded" href={link.href}>
               {link.label}
             </a>
           ))}
         </nav>
-        {/* Action CTA Button */}
-        <div>
-          <a className="text-xs px-5 py-2.5 rounded-full bg-[#0f172a] text-[#f8fafc] font-medium hover:bg-slate-800 transition-colors inline-flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2" href="#contact">
-            <span className="">Hubungi</span>
+        {/* Action CTA Button (desktop) */}
+        <div className="hidden md:block">
+          <a className="text-xs px-5 py-2.5 rounded-full bg-ink-primary text-cream font-medium hover:bg-slate-800 transition-colors inline-flex items-center gap-2 focus-ring" href="#contact">
+            <span>Hubungi</span>
             <svg aria-hidden="true" className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
             </svg>
           </a>
         </div>
+        {/* Hamburger trigger — mobile only, 44x44px touch target */}
+        <button
+          aria-controls="mobile-nav-drawer"
+          aria-expanded={open}
+          aria-label={open ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
+          className="md:hidden w-11 h-11 inline-flex items-center justify-center rounded-lg text-ink-primary hover:bg-ink-primary/5 transition-colors focus-ring"
+          type="button"
+          onClick={() => setOpen((prev) => !prev)}
+        >
+          {open ? (
+            <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" strokeLinejoin="round"></path>
+            </svg>
+          ) : (
+            <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+              <path d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" strokeLinecap="round" strokeLinejoin="round"></path>
+            </svg>
+          )}
+        </button>
       </div>
+      {/* Mobile drawer — conditional render keeps aria-expanded truthful */}
+      {open && (
+        <div
+          className="md:hidden border-t border-cream-border bg-cream/95 backdrop-blur-md"
+          id="mobile-nav-drawer"
+        >
+          <nav aria-label="Navigasi Mobile" className="max-w-7xl mx-auto px-6 sm:px-10 py-5">
+            <ul className="flex flex-col gap-1 text-sm uppercase tracking-[0.12em] font-medium text-ink-muted">
+              {navLinks.map((link) => (
+                <li key={link.href}>
+                  <a
+                    className="block rounded-lg px-3 py-3 hover:bg-ink-primary/5 hover:text-ink-primary transition-colors focus-ring"
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <a
+              className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-ink-primary px-5 py-3 text-xs font-medium text-cream hover:bg-slate-800 transition-colors focus-ring"
+              href="#contact"
+              onClick={() => setOpen(false)}
+            >
+              <span>Hubungi</span>
+              <svg aria-hidden="true" className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+              </svg>
+            </a>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

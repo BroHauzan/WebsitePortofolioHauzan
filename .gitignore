@@ -17,3 +17,8 @@ coverage/
 *.log
 npm-debug.log*
 
+# Artefak non-runtime (disimpan lokal, tidak ikut repo)
+code.html
+orchestrator/
+orchestrator.final-cleanup.yml
+audit/
