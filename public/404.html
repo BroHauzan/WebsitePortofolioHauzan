@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Halaman tidak ditemukan</title>
+    <style>
+      :root { --cream: #fbfbf9; --ink: #0f172a; --muted: #64748b; }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background: var(--cream); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+      .wrap { text-align: center; max-width: 420px; padding: 2rem; }
+      .big { font-size: clamp(5rem, 20vw, 9rem); font-weight: 800; line-height: 1; letter-spacing: -0.04em; color: var(--ink); }
+      .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.18em; color: var(--muted); margin-top: 0.5rem; }
+      .msg { margin-top: 1.5rem; font-size: 1rem; color: var(--muted); line-height: 1.6; }
+      .cta { display: inline-flex; margin-top: 2rem; padding: 0.75rem 1.5rem; background: var(--ink); color: var(--cream); font-size: 0.875rem; font-weight: 500; border-radius: 9999px; text-decoration: none; }
+      .cta:hover { opacity: 0.85; }
+      .cta:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <p class="big" aria-label="404">404</p>
+      <p class="label">Halaman tidak ditemukan</p>
+      <p class="msg">Maaf, halaman yang kamu cari belum ada atau sudah dipindahkan.</p>
+      <a class="cta" href="/">Kembali ke Beranda</a>
+    </div>
+  </body>
+</html>

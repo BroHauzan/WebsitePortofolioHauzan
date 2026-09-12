@@ -3,6 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "description": "Portofolio Hauzan Naufal - Visual Storyteller, Ketua Media Center SMAN 1 Lumajang & OSIS IT Pubdok.",
   "homepage": "https://brohauzan.github.io/WebsitePortofolioHauzan/",
   "scripts": {

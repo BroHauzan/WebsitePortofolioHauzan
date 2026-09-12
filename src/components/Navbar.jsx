@@ -58,7 +58,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 sm:px-10 h-16 sm:h-20 flex items-center justify-between">
         <a aria-label="Beranda Hauzan Naufal" className="flex items-center gap-2.5 text-ink-primary hover:opacity-80 transition-opacity focus-ring rounded" href="#home">
           <span className="font-display font-semibold text-lg tracking-tight">Hauzan Naufal</span>
-          <span className="hidden sm:inline-block text-[11px] uppercase tracking-wider text-ink-muted px-2 py-0.5 border border-cream-border rounded-full bg-cream-subtle">Pubdok</span>
+          <span className="hidden sm:inline-block text-[11px] uppercase tracking-wider text-slate-600 px-2 py-0.5 border border-cream-border rounded-full bg-cream-subtle">Pubdok</span>
         </a>
         {/* Clean Minimal Nav Links (desktop only — unchanged behavior) */}
         <nav aria-label="Navigasi Utama" className="hidden md:flex items-center space-x-8 lg:space-x-10 text-xs uppercase tracking-[0.12em] font-medium text-ink-muted">

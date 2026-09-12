@@ -35,11 +35,14 @@ jobs:
         run: npm run build
 
       - name: Setup Pages
+        # NOTE: `enablement: true` sengaja TIDAK dipakai. POST
+        # /repos/{owner}/{repo}/pages membutuhkan hak admin; GITHUB_TOKEN
+        # hanya punya scope org/repo biasa, sehingga action selalu gagal
+        # dengan "Resource not accessible by integration".
+        # Pages harus diaktifkan manual sekali lewat UI GitHub:
+        #   Settings → Pages → Build and deployment → Source = GitHub Actions
+        # Setelah itu workflow cukup upload artifact dan deploy.
         uses: actions/configure-pages@v6
-        with:
-          # Auto-enable Pages (build type: workflow) if it has not been
-          # turned on yet in repo Settings.
-          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v5

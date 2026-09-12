@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://brohauzan.github.io/WebsitePortofolioHauzan/sitemap.xml

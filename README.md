@@ -9,7 +9,7 @@ Live: `https://brohauzan.github.io/WebsitePortofolioHauzan/`
 - React `18.3.1`, React DOM `18.3.1`
 - Vite `5.4.21` (range `^5.4.11`), `@vitejs/plugin-react` `4.3.4`
 - Tailwind CSS `3.4.19` (range `^3.4.17`), PostCSS `8.4.49`, Autoprefixer `10.4.20`
-- Fonts: Fraunces, Instrument Serif, Geist (Google Fonts). `Inter` sengaja tidak dimuat karena stack `sans` memakai `Geist` lebih dulu, jadi Inter tidak pernah dirender. Fraunces latin di-`preload` (lihat bagian Performance).
+- Fonts: Fraunces + Geist (Google Fonts). `Inter` sengaja tidak dimuat karena stack `sans` memakai `Geist` lebih dulu, jadi Inter tidak pernah dirender. `Instrument Serif` juga tidak dimuat — stack `.font-em` memakai `Fraunces` italic (axis `1,9..144,300..800`) yang sudah meng-cover italic, jadi Instrument Serif 100% dead weight. Fraunces latin di-`preload` (lihat bagian Performance).
 - Tanpa router, tanpa backend, tanpa env.
 
 ## Cara jalan
@@ -51,6 +51,9 @@ public/
   .nojekyll             # file kosong, diminta GitHub Pages (lihat bagian Deploy)
   favicon.ico
   apple-touch-icon.png
+  robots.txt            # SEO dasar; arahkan crawler ke sitemap.xml
+  sitemap.xml           # single-URL sitemap untuk project page sub-path
+  404.html              # halaman 404 custom (standalone HTML tanpa React)
   assets/images/og-cover.jpg
   assets/videos/        # kosong
 src/
@@ -64,7 +67,7 @@ src/
 DESIGN.md               # token desain, bukan runtime
 ```
 
-Artefak non-runtime ada di disk tapi **tidak** di-commit (lihat `.gitignore`): `code.html` (referensi visual Stitch lama), `orchestrator/`, `orchestrator.final-cleanup.yml`, `audit/`.
+Artefak non-runtime ada di disk tapi **tidak** di-commit (lihat `.gitignore`): `code.html` (referensi visual Stitch lama), `orchestrator/`, `orchestrator.final-cleanup.yml`, `audit/`, `.kilocode/` (history task agent — bisa berisi kredensial API), `.kilo/`.
 
 ## Accessibility & Performance
 
@@ -89,7 +92,7 @@ Repo: `https://github.com/BroHauzan/WebsitePortofolioHauzan` — live di `https:
 - `package.json` `homepage`: `https://brohauzan.github.io/WebsitePortofolioHauzan/`.
 - Semua URL absolut di `index.html` (canonical, favicon, apple-touch-icon, `og:url`, `og:image`, `twitter:url`, `twitter:image`) sudah memakai sub-path yang sama.
 - **Auto-deploy**: `.github/workflows/deploy.yml` jalan otomatis tiap push ke branch `main` (dan bisa dipicu manual lewat `workflow_dispatch`). Alurnya: `npm ci` → `npm run build` → upload `./dist` sebagai Pages artifact → `actions/deploy-pages`. Tidak perlu commit `dist/`.
-- **Aktifkan sekali di repo**: Settings → Pages → Build and deployment → Source = **GitHub Actions**. Tanpa ini workflow akan gagal di step deploy.
+- **Pengaktifan Pages (WAJIB manual, sekali)**: `enablement: true` pada step `actions/configure-pages` **tidak dipakai** karena `GITHUB_TOKEN` tidak punya hak admin untuk `POST /repos/{owner}/{repo}/pages`. Halaman ini akan tetap 404 sampai Pages diaktifkan dari UI: Settings → Pages → Build and deployment → Source = **GitHub Actions**. Setelah itu workflow akan berhasil.
 - `public/.nojekyll` disalin apa adanya ke `dist/` saat build. File ini mematikan pemrosesan Jekyll di Pages sehingga folder yang diawali garis bawah (mis. `_assets`) dan file lain tidak di-skip.
 - `dist/` tidak di-commit (di-`.gitignore`); build sepenuhnya di runner.
 

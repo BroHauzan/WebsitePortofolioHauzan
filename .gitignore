@@ -22,3 +22,7 @@ code.html
 orchestrator/
 orchestrator.final-cleanup.yml
 audit/
+
+# Kilo agent state (bisa berisi kredensial API)
+.kilo/
+.kilocode/
