@@ -4,8 +4,10 @@
 // #testimonials #tools #contact
 //
 // Responsive behavior:
-// - >= 768px (md): the original inline link row + CTA, unchanged.
-// - < 768px: the inline row is hidden, so this file owns one
+// - >= 1024px (lg): inline link row + CTA. The desktop row does NOT
+//   fit at md (768px): brand + 6 links + CTA measured 831px > 768px
+//   (audit P0 2026-09-13), so the desktop layout only activates at lg.
+// - < 1024px: the inline row is hidden, so this file owns one
 //   explicit drawer plus a 44x44px hamburger trigger, so all six
 //   anchors and the CTA stay reachable (WCAG 2.5.8 target size).
 // ============================================================
@@ -42,9 +44,9 @@ export default function Navbar() {
   }, [open]);
 
   // Collapse the drawer as soon as the layout switches to the desktop
-  // nav (>= 768px) so it can never linger open over the desktop view.
+  // nav (>= 1024px) so it can never linger open over the desktop view.
   useEffect(() => {
-    const mq = window.matchMedia('(min-width: 768px)');
+    const mq = window.matchMedia('(min-width: 1024px)');
     const handleChange = (event) => {
       if (event.matches) setOpen(false);
     };
@@ -61,7 +63,7 @@ export default function Navbar() {
           <span className="hidden sm:inline-block text-[11px] uppercase tracking-wider text-slate-600 px-2 py-0.5 border border-cream-border rounded-full bg-cream-subtle">Pubdok</span>
         </a>
         {/* Clean Minimal Nav Links (desktop only — unchanged behavior) */}
-        <nav aria-label="Navigasi Utama" className="hidden md:flex items-center space-x-8 lg:space-x-10 text-xs uppercase tracking-[0.12em] font-medium text-ink-muted">
+        <nav aria-label="Navigasi Utama" className="hidden lg:flex items-center space-x-10 text-xs uppercase tracking-[0.12em] font-medium text-ink-muted">
           {navLinks.map((link) => (
             <a key={link.href} className="hover:text-ink-primary transition-colors focus-ring rounded" href={link.href}>
               {link.label}
@@ -69,7 +71,7 @@ export default function Navbar() {
           ))}
         </nav>
         {/* Action CTA Button (desktop) */}
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <a className="text-xs px-5 py-2.5 rounded-full bg-ink-primary text-cream font-medium hover:bg-slate-800 transition-colors inline-flex items-center gap-2 focus-ring" href="#contact">
             <span>Hubungi</span>
             <svg aria-hidden="true" className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +84,7 @@ export default function Navbar() {
           aria-controls="mobile-nav-drawer"
           aria-expanded={open}
           aria-label={open ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
-          className="md:hidden w-11 h-11 inline-flex items-center justify-center rounded-lg text-ink-primary hover:bg-ink-primary/5 transition-colors focus-ring"
+          className="lg:hidden w-11 h-11 inline-flex items-center justify-center rounded-lg text-ink-primary hover:bg-ink-primary/5 transition-colors focus-ring"
           type="button"
           onClick={() => setOpen((prev) => !prev)}
         >
@@ -100,7 +102,7 @@ export default function Navbar() {
       {/* Mobile drawer — conditional render keeps aria-expanded truthful */}
       {open && (
         <div
-          className="md:hidden border-t border-cream-border bg-cream/95 backdrop-blur-md"
+          className="lg:hidden border-t border-cream-border bg-cream/95 backdrop-blur-md"
           id="mobile-nav-drawer"
         >
           <nav aria-label="Navigasi Mobile" className="max-w-7xl mx-auto px-6 sm:px-10 py-5">
