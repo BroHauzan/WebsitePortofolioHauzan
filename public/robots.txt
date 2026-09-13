@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://brohauzan.github.io/WebsitePortofolioHauzan/sitemap.xml
+Sitemap: https://portofolio-hauzan-alpha.vercel.app/sitemap.xml

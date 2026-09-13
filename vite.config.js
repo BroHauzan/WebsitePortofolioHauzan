@@ -1,9 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// base: the site is published to https://brohauzan.github.io/WebsitePortofolioHauzan/
+// base: situs di-deploy ke Vercel dan disajikan dari ROOT domain
+// (https://portofolio-hauzan-alpha.vercel.app/), jadi pakai relative base.
+// './' membuat asset URL resolve terhadap lokasi index.html, bukan terhadap
+// root host — benar untuk Vercel (root) maupun sub-path hosting lain tanpa
+// perlu konfigurasi per-target. Jangan pakai '/WebsitePortofolioHauzan/' lagi:
+// path itu milik GitHub Pages project page dan menyebabkan 404 aset (halaman
+// putih) saat disajikan dari root Vercel.
 export default defineConfig({
-  base: '/WebsitePortofolioHauzan/',
+  base: './',
   plugins: [react()],
   server: {
     port: 5173,

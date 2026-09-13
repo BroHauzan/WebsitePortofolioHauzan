@@ -2,7 +2,7 @@
 
 Portofolio Hauzan Naufal — Visual Storyteller, Ketua Media Center SMAN 1 Lumajang & OSIS IT Pubdok. Menampilkan karya fotografi, videografi, dan motion graphics.
 
-Live: `https://brohauzan.github.io/WebsitePortofolioHauzan/`
+Live: `https://portofolio-hauzan-alpha.vercel.app/`
 
 ## Stack + versi nyata
 
@@ -43,12 +43,10 @@ Kategori Showcase (`src/data/showcaseData.js`): Photography, Videography, Motion
 
 ```
 index.html
-vite.config.js          # base: '/WebsitePortofolioHauzan/'
-tailwind.config.js
+vite.config.js          # base: './' (relative — benar untuk Vercel dan sub-path hosting lain)
 postcss.config.js
-.github/workflows/deploy.yml  # auto-deploy ke GitHub Pages
 public/
-  .nojekyll             # file kosong, diminta GitHub Pages (lihat bagian Deploy)
+  .nojekyll             # sisa: tidak dipakai lagi setelah GitHub Pages dihentikan
   favicon.ico
   apple-touch-icon.png
   robots.txt            # SEO dasar; arahkan crawler ke sitemap.xml
@@ -84,17 +82,19 @@ Artefak non-runtime ada di disk tapi **tidak** di-commit (lihat `.gitignore`): `
 
 Tidak ada. Tidak pakai `.env`.
 
-## Deploy / GitHub Pages
+## Deploy / Vercel
 
-Repo: `https://github.com/BroHauzan/WebsitePortofolioHauzan` — live di `https://brohauzan.github.io/WebsitePortofolioHauzan/` (project page, jadi situs disajikan dari sub-path `/WebsitePortofolioHauzan/`, bukan root).
+Repo: `https://github.com/BroHauzan/WebsitePortofolioHauzan` — live di `https://portofolio-hauzan-alpha.vercel.app/` (hosting Vercel, menyajikan situs dari **root** domain).
 
-- `vite.config.js` pakai `base: '/WebsitePortofolioHauzan/'`.
-- `package.json` `homepage`: `https://brohauzan.github.io/WebsitePortofolioHauzan/`.
-- Semua URL absolut di `index.html` (canonical, favicon, apple-touch-icon, `og:url`, `og:image`, `twitter:url`, `twitter:image`) sudah memakai sub-path yang sama.
-- **Auto-deploy**: `.github/workflows/deploy.yml` jalan otomatis tiap push ke branch `main` (dan bisa dipicu manual lewat `workflow_dispatch`). Alurnya: `npm ci` → `npm run build` → upload `./dist` sebagai Pages artifact → `actions/deploy-pages`. Tidak perlu commit `dist/`.
-- **Pengaktifan Pages (WAJIB manual, sekali)**: `enablement: true` pada step `actions/configure-pages` **tidak dipakai** karena `GITHUB_TOKEN` tidak punya hak admin untuk `POST /repos/{owner}/{repo}/pages`. Halaman ini akan tetap 404 sampai Pages diaktifkan dari UI: Settings → Pages → Build and deployment → Source = **GitHub Actions**. Setelah itu workflow akan berhasil.
-- `public/.nojekyll` disalin apa adanya ke `dist/` saat build. File ini mematikan pemrosesan Jekyll di Pages sehingga folder yang diawali garis bawah (mis. `_assets`) dan file lain tidak di-skip.
-- `dist/` tidak di-commit (di-`.gitignore`); build sepenuhnya di runner.
+- `vite.config.js` pakai `base: './'` (relative base). Benar untuk Vercel (root) maupun hosting sub-path tanpa perlu konfigurasi per-target. **Jangan kembalikan ke `/WebsitePortofolioHauzan/`** — path itu milik GitHub Pages dan menyebabkan halaman putih (asset 404) di Vercel.
+- `package.json` `homepage`: `https://portofolio-hauzan-alpha.vercel.app/`.
+- Semua URL di `index.html` (canonical, `og:url`, `twitter:url`, `og:image`, `twitter:image`) mengarah ke domain Vercel. Favicon dan apple-touch-icon pakai path relatif (`./favicon.ico`).
+- **Auto-deploy Vercel**: setiap push ke `main` akan memicu build di dashboard Vercel. Tidak perlu `.github/workflows/deploy.yml` lagi — workflow GitHub Pages sudah dihapus karena `has_pages: false` (GitHub Pages belum pernah diaktifkan untuk repo ini).
+- `public/404.html` berisi standalone HTML tanpa React, disajikan langsung oleh Vercel untuk halaman yang belum ada.
+
+## GitHub Pages (dihentikan)
+
+Workflow `.github/workflows/deploy.yml` sudah **dihapus**. GitHub Pages belum pernah aktif (`has_pages: false`) dan konfigurasi sekarang mengarah ke Vercel.
 
 ## Status placeholder
 
