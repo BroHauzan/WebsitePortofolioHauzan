@@ -125,17 +125,17 @@ export default function Stats() {
     >
       {/* Eyebrow & Display Heading Lockup */}
       <div className="mb-12">
-        <span className="text-[11px] sm:text-xs font-semibold tracking-eyebrow uppercase text-ink-muted block mb-3">
+        <span className="text-[11px] sm:text-xs font-semibold tracking-eyebrow-optical uppercase text-ink-muted block mb-3">
           Arsip Liputan &amp; Rekam Jejak
         </span>
-        <h2 className="font-display text-3xl sm:text-5xl font-medium tracking-tightHeadline text-ink-primary">
+        <h2 className="font-display-section text-3xl sm:text-5xl font-medium text-ink-primary">
           Rekam jejak &amp; <span className="font-em text-slate-700">arsip</span> liputan.
         </h2>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
         {/* Left Hero Stat Card with Audio Waveform Accent */}
-        <div className="lg:col-span-6 bg-white border border-cream-border rounded-xl p-8 sm:p-12 flex flex-col justify-between shadow-sm">
+        <div className="lg:col-span-6 bg-white border border-cream-border rounded-xl p-8 sm:p-12 flex flex-col justify-between shadow-sm apple-card-hover">
           <div>
             {/* Field Recorder Telemetry & Rhythm Waveform Header */}
             <div className="flex items-center justify-between pb-4 mb-6 border-b border-cream-border">
@@ -199,7 +199,7 @@ export default function Stats() {
           {metricCards.map((card) => (
             <div
               key={card.title}
-              className="bg-white border border-cream-border rounded-xl p-6 sm:p-7 flex flex-col justify-center shadow-sm"
+              className="bg-white border border-cream-border rounded-xl p-6 sm:p-7 flex flex-col justify-center shadow-sm apple-card-hover"
             >
               <div className="flex items-baseline justify-between mb-2">
                 <span className="font-display text-3xl sm:text-4xl font-semibold text-ink-primary">

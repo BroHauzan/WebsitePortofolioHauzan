@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { copyToClipboard } from '../utils/toast';
+import { triggerSuccessHaptic } from '../utils/haptics';
 
 // ============================================================
 // FOOTER: Deep Midnight Navy Block with Structured Columns
@@ -45,6 +46,7 @@ export default function Footer() {
       'Email hauzannaufal2008@gmail.com berhasil disalin ke papan klip!'
     );
     if (ok) {
+      triggerSuccessHaptic();
       setCopiedEmail(true);
       if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
       copyTimeoutRef.current = setTimeout(() => setCopiedEmail(false), 2500);
@@ -87,15 +89,15 @@ export default function Footer() {
                 type="button"
                 onClick={handleCopyEmail}
                 aria-label="Salin alamat email hauzannaufal2008@gmail.com"
-                className="text-white font-medium text-xs flex items-center gap-2 mb-4 group hover:text-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 rounded"
+                className="apple-press text-white font-medium text-xs flex items-center gap-2 mb-4 group hover:text-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 rounded"
               >
                 <span className="underline decoration-slate-500 group-hover:decoration-white underline-offset-2 break-all">
                   hauzannaufal2008@gmail.com
                 </span>
                 {copiedEmail ? (
-                  <span className="inline-flex items-center gap-1 text-emerald-400 text-[10px] font-mono bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-500/40 flex-shrink-0">
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                  <span className="inline-flex items-center gap-1.5 text-emerald-400 text-[10px] font-mono bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500/40 flex-shrink-0">
+                    <svg className="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <polyline points="20 6 9 17 4 12" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="animate-strokeDraw" />
                     </svg>
                     <span>Tersalin!</span>
                   </span>

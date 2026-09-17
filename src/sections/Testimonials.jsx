@@ -68,10 +68,10 @@ export default function Testimonials() {
       id="testimonials"
     >
       <div className="mb-12">
-        <span className="text-[11px] sm:text-xs font-semibold tracking-eyebrow uppercase text-ink-muted block mb-3">
+        <span className="text-[11px] sm:text-xs font-semibold tracking-eyebrow-optical uppercase text-ink-muted block mb-3">
           Rekaman Kolaborasi &amp; Testimoni
         </span>
-        <h2 className="font-display text-3xl sm:text-5xl font-medium tracking-tightHeadline text-ink-primary">
+        <h2 className="font-display-section text-3xl sm:text-5xl font-medium text-ink-primary">
           Voice memo dari <span className="font-em text-slate-700">rekan liputan.</span>
         </h2>
         <p className="text-sm sm:text-base text-ink-muted leading-[1.65] max-w-xl mt-3">
@@ -86,7 +86,7 @@ export default function Testimonials() {
           return (
             <div
               key={t.name}
-              className="relative group bg-white border border-cream-border rounded-xl p-6 sm:p-7 flex flex-col justify-between shadow-sm transition-all hover:border-slate-400 focus-ring overflow-hidden"
+              className="apple-card-hover relative group bg-white border border-cream-border rounded-xl p-6 sm:p-7 flex flex-col justify-between shadow-sm transition-all hover:border-slate-400 focus-ring overflow-hidden"
             >
               {/* AF Reticle Lock on Hover — positioned bottom-right so audio controls remain clear */}
               <CameraReticleLock badgePosition="bottom-right" showCrosshair={false} className="rounded-xl" />

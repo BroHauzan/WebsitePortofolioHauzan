@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { copyToClipboard } from '../utils/toast';
 import { lockBodyScroll, unlockBodyScroll } from '../utils/scrollLock';
+import { triggerSuccessHaptic, triggerMediumHaptic } from '../utils/haptics';
 
 export default function ProductionBriefingModal({ briefing, onClose }) {
   const modalRef = useRef(null);
@@ -67,6 +68,7 @@ export default function ProductionBriefingModal({ briefing, onClose }) {
   if (!briefing) return null;
 
   const handleShare = () => {
+    triggerSuccessHaptic();
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://portofolio-hauzan-alpha.vercel.app';
     const textToCopy = `${briefing.title} — ${briefing.subtitle} | Dokumentasi Hauzan Naufal (${origin}/#works)`;
     copyToClipboard(textToCopy, `Detail proyek "${briefing.title}" disalin!`);
@@ -229,18 +231,21 @@ export default function ProductionBriefingModal({ briefing, onClose }) {
           <button
             type="button"
             onClick={handleShare}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-cream-border bg-white text-xs font-medium text-ink-secondary hover:bg-cream-subtle transition-colors focus-ring"
+            className="apple-press w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-cream-border bg-white text-xs font-medium text-ink-secondary hover:bg-cream-subtle transition-colors focus-ring shadow-xs"
           >
             <svg className="w-4 h-4 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
             <span>Salin Ringkasan Proyek</span>
           </button>
 
           <button
             type="button"
-            onClick={onClose}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-ink-primary text-cream text-xs font-medium hover:bg-slate-800 transition-colors focus-ring text-center"
+            onClick={() => {
+              triggerMediumHaptic();
+              onClose();
+            }}
+            className="apple-press w-full sm:w-auto px-5 py-2.5 rounded-full bg-ink-primary text-cream text-xs font-medium hover:bg-slate-800 transition-colors focus-ring text-center shadow-sm"
           >
             Selesai Membaca
           </button>

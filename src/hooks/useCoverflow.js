@@ -5,6 +5,7 @@ import {
   calculateCircularDiff,
   getStepConfig,
 } from '../utils/coverflowMath';
+import { triggerLightHaptic } from '../utils/haptics';
 
 // ============================================================
 // 3D CIRCULAR COVERFLOW — exact port of the original vanilla JS
@@ -137,6 +138,9 @@ export default function useCoverflow({
   const setActiveIndexState = useCallback(
     (newIndex) => {
       const normalized = (newIndex + total) % total;
+      if (normalized !== activeIndexRef.current) {
+        triggerLightHaptic();
+      }
       activeIndexRef.current = normalized;
       setActiveIndex(normalized);
       updateCarousel();
@@ -300,6 +304,12 @@ export default function useCoverflow({
         if (e.cancelable) {
           e.preventDefault();
         }
+        if (!prefersReducedMotionRef.current && stageRef.current) {
+          const resistance = 0.32;
+          const rubberX = Math.round(dx * resistance);
+          stageRef.current.style.transition = 'none';
+          stageRef.current.style.transform = `translate3d(${rubberX}px, 0, 0)`;
+        }
         return;
       }
 
@@ -319,6 +329,10 @@ export default function useCoverflow({
     const onTouchEnd = () => {
       if (gestureState === 'horizontal-swipe') {
         const dx = currentX - startX;
+        if (stageRef.current && !prefersReducedMotionRef.current) {
+          stageRef.current.style.transition = 'transform 450ms cubic-bezier(0.16, 1, 0.3, 1)';
+          stageRef.current.style.transform = 'translate3d(0, 0, 0)';
+        }
         if (dx < -SWIPE_THRESHOLD) {
           next();
         } else if (dx > SWIPE_THRESHOLD) {
@@ -335,6 +349,10 @@ export default function useCoverflow({
     };
 
     const onTouchCancel = () => {
+      if (stageRef.current && !prefersReducedMotionRef.current) {
+        stageRef.current.style.transition = 'transform 450ms cubic-bezier(0.16, 1, 0.3, 1)';
+        stageRef.current.style.transform = 'translate3d(0, 0, 0)';
+      }
       gestureState = 'idle';
     };
 
@@ -361,7 +379,10 @@ export default function useCoverflow({
       gestureTarget.removeEventListener('touchend', onTouchEnd);
       gestureTarget.removeEventListener('touchcancel', onTouchCancel);
       window.removeEventListener('resize', onResize);
-      clearTimeout(resizeTimer);
+      if (stageRef.current) {
+        stageRef.current.style.transform = '';
+        stageRef.current.style.transition = '';
+      }
       if (suppressTimeoutRef.current) {
         clearTimeout(suppressTimeoutRef.current);
         suppressTimeoutRef.current = null;

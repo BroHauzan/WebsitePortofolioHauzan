@@ -42,13 +42,93 @@ body {
 
 @layer components {
   /*
-    Shared keyboard focus treatment for interactive elements.
-    Keep the focus indicator uniform across Navbar / Footer / Showcase
-    instead of repeating the long focus-visible utility chain per element.
+    Apple-Grade Keyboard Focus Halo.
+    Strictly activates on :focus-visible so clicking with a mouse never shows an outline,
+    while keyboard Tab navigation displays a crisp Apple-style ambient halo.
   */
   .focus-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2;
+    @apply focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/80 focus-visible:ring-offset-2 focus-visible:shadow-[0_0_0_4px_rgba(15,23,42,0.08)];
   }
+
+  .focus-ring-dark {
+    @apply focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/90 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 focus-visible:shadow-[0_0_0_4px_rgba(255,255,255,0.15)];
+  }
+
+  /* Apple UI Craftsmanship: Spring Physics & Specular Glass Utilities */
+  .apple-press {
+    transition: transform 180ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 150ms ease, box-shadow 180ms ease;
+  }
+  .apple-press:active {
+    transform: scale(0.96);
+  }
+
+  .apple-glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 8px 24px -4px rgba(15, 23, 42, 0.04);
+  }
+
+  .apple-card-hover {
+    transition: transform 260ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1), border-color 200ms ease;
+  }
+  .apple-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 14px 28px -6px rgba(15, 23, 42, 0.06);
+  }
+
+  /* Optical Typography Utilities */
+  .font-display-hero {
+    font-family: 'Fraunces', Georgia, serif;
+    letter-spacing: -0.018em;
+    line-height: 1.15;
+  }
+  @screen sm {
+    .font-display-hero {
+      letter-spacing: -0.026em;
+      line-height: 1.10;
+    }
+  }
+  @screen lg {
+    .font-display-hero {
+      letter-spacing: -0.036em;
+      line-height: 1.05;
+    }
+  }
+
+  .font-display-section {
+    font-family: 'Fraunces', Georgia, serif;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+  @screen sm {
+    .font-display-section {
+      letter-spacing: -0.024em;
+      line-height: 1.14;
+    }
+  }
+
+  .tracking-eyebrow-optical {
+    letter-spacing: 0.14em;
+    line-height: 1.4;
+    text-transform: uppercase;
+  }
+}
+
+/* Apple SF Symbols Living Vector Stroke Draw Keyframe */
+@keyframes strokeDraw {
+  from {
+    stroke-dashoffset: 28;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-strokeDraw {
+  stroke-dasharray: 28;
+  stroke-dashoffset: 28;
+  animation: strokeDraw 360ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /*
@@ -75,10 +155,10 @@ body {
   left: 50%;
   top: 50%;
   transform-style: preserve-3d;
-  transition: transform 450ms cubic-bezier(0.25, 1, 0.5, 1),
-              opacity 450ms cubic-bezier(0.25, 1, 0.5, 1),
-              filter 450ms cubic-bezier(0.25, 1, 0.5, 1),
-              box-shadow 450ms cubic-bezier(0.25, 1, 0.5, 1);
+  transition: transform 450ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 450ms cubic-bezier(0.16, 1, 0.3, 1),
+              filter 450ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 450ms cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity, filter;
   user-select: none;
 }
@@ -151,12 +231,75 @@ body {
   }
 }
 
+/* Apple Store Style Skeleton Shimmer Wave */
+@keyframes shimmerWave {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(226, 226, 220, 0.45) 0%,
+    rgba(255, 255, 255, 0.85) 50%,
+    rgba(226, 226, 220, 0.45) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmerWave 2.2s infinite linear;
+}
+
+/* Choreographed Visual Priority Staggered Entrance */
+.stagger-reveal {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition: opacity 550ms cubic-bezier(0.16, 1, 0.3, 1), transform 550ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.stagger-reveal.revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.stagger-delay-1 {
+  transition-delay: 0ms;
+}
+
+.stagger-delay-2 {
+  transition-delay: 50ms;
+}
+
+.stagger-delay-3 {
+  transition-delay: 100ms;
+}
+
+.stagger-delay-4 {
+  transition-delay: 150ms;
+}
+
+.stagger-delay-5 {
+  transition-delay: 200ms;
+}
+
+/* Strict Accessibility & Reduced Motion Overrides */
 @media (prefers-reduced-motion: reduce) {
   .animate-backdrop,
   .animate-fadeIn,
-  .animate-slideLeft {
+  .animate-slideLeft,
+  .skeleton-shimmer {
     animation: none !important;
   }
+
+  .stagger-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

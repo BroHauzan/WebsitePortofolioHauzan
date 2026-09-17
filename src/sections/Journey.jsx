@@ -13,8 +13,8 @@ export default function Journey() {
   return (
     <section className="border-t border-cream-border py-20 sm:py-32 max-w-7xl mx-auto px-6 sm:px-10" id="journey">
       <div className="mb-12">
-        <span className="text-[11px] sm:text-xs font-semibold tracking-eyebrow uppercase text-ink-muted block mb-3">Perjalanan Kreatif</span>
-        <h2 className="font-display text-3xl sm:text-5xl font-medium tracking-tightHeadline text-ink-primary">
+        <span className="text-[11px] sm:text-xs font-semibold tracking-eyebrow-optical uppercase text-ink-muted block mb-3">Perjalanan Kreatif</span>
+        <h2 className="font-display-section text-3xl sm:text-5xl font-medium text-ink-primary">
           Dari kecil sampai <span className="font-em text-slate-700">sekarang.</span>
         </h2>
         <p className="text-sm sm:text-base text-ink-muted leading-[1.65] max-w-xl mt-3">
@@ -26,7 +26,7 @@ export default function Journey() {
           if (entry.variant === 'featured') {
             // 2026 highlighted card (matches source exactly) with AF Reticle Lock
             return (
-              <div key={entry.year} className="relative group p-5 bg-white border border-slate-900 rounded-xl overflow-hidden focus-ring">
+              <div key={entry.year} className="apple-card-hover relative group p-5 bg-white border border-slate-900 rounded-xl overflow-hidden focus-ring shadow-xs">
                 <CameraReticleLock badgePosition="top-right" showCrosshair={false} className="rounded-xl" />
                 <div aria-hidden="true" className={DOT_FEATURED}></div>
                 <span className="text-xs font-mono tracking-wider text-ink-primary font-semibold uppercase">{entry.year}</span>

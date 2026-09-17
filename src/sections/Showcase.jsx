@@ -3,9 +3,12 @@ import showcaseCategories from '../data/showcaseData';
 import productionBriefings from '../data/briefingsData';
 import { PhotographyIcon, showcaseIcons } from '../components/Icons';
 import useCoverflow from '../hooks/useCoverflow';
+import useMagneticCursor from '../hooks/useMagneticCursor';
+import useScrollReveal from '../hooks/useScrollReveal';
 import ProductionBriefingModal from '../components/ProductionBriefingModal';
 import CameraReticleLock from '../components/CameraReticleLock';
 import { BRIEFING_OPEN_EVENT, consumePendingBriefing } from '../utils/briefingEvents';
+import { triggerMediumHaptic } from '../utils/haptics';
 
 // ============================================================
 // SECTION 4: SHOWCASE KARYA (3D Circular Coverflow Carousel)
@@ -50,6 +53,10 @@ export default function Showcase() {
     return () => window.removeEventListener(BRIEFING_OPEN_EVENT, handleOpen);
   }, []);
 
+  const prevMagnet = useMagneticCursor(0.25);
+  const nextMagnet = useMagneticCursor(0.25);
+  const headerReveal = useScrollReveal(0.15);
+
   const { activeIndex, prev, next, select, handleCardClick, handleCardKeyDown } =
     useCoverflow({
       total: showcaseCategories.length,
@@ -73,20 +80,20 @@ export default function Showcase() {
       id="works"
       role="region"
     >
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-14 gap-6">
+      <div ref={headerReveal.ref} className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-14 gap-6">
         <div>
-          <span className="text-[11px] sm:text-xs font-semibold tracking-eyebrow uppercase text-ink-muted block mb-3">
+          <span className={`text-[11px] sm:text-xs font-semibold tracking-eyebrow-optical uppercase text-ink-muted block mb-3 stagger-reveal stagger-delay-1 ${headerReveal.isRevealed ? 'revealed' : ''}`}>
             Showcase Eksplorasi &amp; Karya
           </span>
-          <h2 className="font-display text-3xl sm:text-5xl font-medium tracking-tightHeadline text-ink-primary">
+          <h2 className={`font-display-section text-3xl sm:text-5xl font-medium text-ink-primary stagger-reveal stagger-delay-2 ${headerReveal.isRevealed ? 'revealed' : ''}`}>
             Arsip visual, <span className="font-em text-slate-700">kreasi &amp; eksplorasi multimedia.</span>
           </h2>
-          <p className="text-sm sm:text-base text-ink-muted leading-[1.65] max-w-2xl mt-3">
+          <p className={`text-sm sm:text-base text-ink-muted leading-[1.65] max-w-2xl mt-3 stagger-reveal stagger-delay-3 ${headerReveal.isRevealed ? 'revealed' : ''}`}>
             Kurasi karya videografi panggung, festival sekolah, motion graphics, dan eksplorasi visual interaktif.
           </p>
         </div>
         {/* Top Right Compact Indicator */}
-        <div className="hidden sm:flex items-center gap-3 self-start md:self-end">
+        <div className={`hidden sm:flex items-center gap-3 self-start md:self-end stagger-reveal stagger-delay-3 ${headerReveal.isRevealed ? 'revealed' : ''}`}>
           <span className="text-xs font-mono tracking-widest text-ink-muted uppercase">Index</span>
           <span aria-live="polite" className="text-xs font-mono font-semibold text-ink-primary bg-white border border-cream-border px-3 py-1 rounded-full shadow-sm">
             {`0${activeIndex + 1} / 0${N}`}
@@ -167,10 +174,16 @@ export default function Showcase() {
         <div className="flex items-center gap-3">
           {/* Prev Button */}
           <button
-            ref={prevRef}
+            ref={(el) => {
+              prevRef.current = el;
+              prevMagnet.ref.current = el;
+            }}
+            style={prevMagnet.style}
+            onMouseMove={prevMagnet.onMouseMove}
+            onMouseLeave={prevMagnet.onMouseLeave}
             aria-controls="coverflowStage"
             aria-label="Kategori Sebelumnya"
-            className="w-11 h-11 rounded-full border border-cream-border bg-white text-ink-primary hover:bg-slate-900 hover:text-white transition-all flex items-center justify-center focus-ring shadow-sm cursor-pointer"
+            className="apple-press w-11 h-11 rounded-full border border-cream-border bg-white text-ink-primary hover:bg-slate-900 hover:text-white transition-all flex items-center justify-center focus-ring shadow-xs cursor-pointer"
             type="button"
             onClick={(e) => { e.preventDefault(); prev(); }}
           >
@@ -180,10 +193,16 @@ export default function Showcase() {
           </button>
           {/* Next Button */}
           <button
-            ref={nextRef}
+            ref={(el) => {
+              nextRef.current = el;
+              nextMagnet.ref.current = el;
+            }}
+            style={nextMagnet.style}
+            onMouseMove={nextMagnet.onMouseMove}
+            onMouseLeave={nextMagnet.onMouseLeave}
             aria-controls="coverflowStage"
             aria-label="Kategori Selanjutnya"
-            className="w-11 h-11 rounded-full border border-cream-border bg-white text-ink-primary hover:bg-slate-900 hover:text-white transition-all flex items-center justify-center focus-ring shadow-sm cursor-pointer"
+            className="apple-press w-11 h-11 rounded-full border border-cream-border bg-white text-ink-primary hover:bg-slate-900 hover:text-white transition-all flex items-center justify-center focus-ring shadow-xs cursor-pointer"
             type="button"
             onClick={(e) => { e.preventDefault(); next(); }}
           >
@@ -246,14 +265,18 @@ export default function Showcase() {
           <div
             role="button"
             tabIndex={0}
-            onClick={() => setActiveBriefing(productionBriefings['dies-natalis'])}
+            onClick={() => {
+              triggerMediumHaptic();
+              setActiveBriefing(productionBriefings['dies-natalis']);
+            }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
+                triggerMediumHaptic();
                 setActiveBriefing(productionBriefings['dies-natalis']);
               }
             }}
-            className="relative border-l-2 border-cream-border hover:border-slate-900 pl-4 py-2.5 cursor-pointer transition-all hover:bg-cream-subtle/70 rounded-r-lg group focus-ring overflow-hidden"
+            className="apple-press relative border-l-2 border-cream-border hover:border-slate-900 pl-4 py-2.5 cursor-pointer transition-all hover:bg-cream-subtle/70 rounded-r-lg group focus-ring overflow-hidden shadow-xs"
           >
             <CameraReticleLock badgePosition="bottom-right" showCrosshair={false} className="rounded-r-lg" />
             <div className="flex items-center justify-between mb-1">
@@ -267,14 +290,18 @@ export default function Showcase() {
           <div
             role="button"
             tabIndex={0}
-            onClick={() => setActiveBriefing(productionBriefings['profil-ekskul'])}
+            onClick={() => {
+              triggerMediumHaptic();
+              setActiveBriefing(productionBriefings['profil-ekskul']);
+            }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
+                triggerMediumHaptic();
                 setActiveBriefing(productionBriefings['profil-ekskul']);
               }
             }}
-            className="relative border-l-2 border-cream-border hover:border-slate-900 pl-4 py-2.5 cursor-pointer transition-all hover:bg-cream-subtle/70 rounded-r-lg group focus-ring overflow-hidden"
+            className="apple-press relative border-l-2 border-cream-border hover:border-slate-900 pl-4 py-2.5 cursor-pointer transition-all hover:bg-cream-subtle/70 rounded-r-lg group focus-ring overflow-hidden shadow-xs"
           >
             <CameraReticleLock badgePosition="bottom-right" showCrosshair={false} className="rounded-r-lg" />
             <div className="flex items-center justify-between mb-1">
@@ -288,14 +315,18 @@ export default function Showcase() {
           <div
             role="button"
             tabIndex={0}
-            onClick={() => setActiveBriefing(productionBriefings['pelepasan-wisuda'])}
+            onClick={() => {
+              triggerMediumHaptic();
+              setActiveBriefing(productionBriefings['pelepasan-wisuda']);
+            }}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
+                triggerMediumHaptic();
                 setActiveBriefing(productionBriefings['pelepasan-wisuda']);
               }
             }}
-            className="relative border-l-2 border-cream-border hover:border-slate-900 pl-4 py-2.5 cursor-pointer transition-all hover:bg-cream-subtle/70 rounded-r-lg group focus-ring overflow-hidden"
+            className="apple-press relative border-l-2 border-cream-border hover:border-slate-900 pl-4 py-2.5 cursor-pointer transition-all hover:bg-cream-subtle/70 rounded-r-lg group focus-ring overflow-hidden shadow-xs"
           >
             <CameraReticleLock badgePosition="bottom-right" showCrosshair={false} className="rounded-r-lg" />
             <div className="flex items-center justify-between mb-1">

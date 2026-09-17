@@ -1,9 +1,8 @@
-import { lazy, Suspense, useState, useCallback } from 'react';
+import { lazy, Suspense } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Toast from './components/Toast';
 import CommandPalette from './components/CommandPalette';
-import CinemaBootSequence from './components/CinemaBootSequence';
 
 // ============================================================
 // Section order:
@@ -30,54 +29,33 @@ const Journey = lazy(() => import('./sections/Journey'));
 const Testimonials = lazy(() => import('./sections/Testimonials'));
 const Tools = lazy(() => import('./sections/Tools'));
 
-// ============================================================
-// Suspense fallback: a reserved-height, non-announced placeholder.
-// ============================================================
-function SectionFallback({ minHeight }) {
-  return <div aria-hidden="true" className={`w-full ${minHeight}`} />;
-}
+import { ShowcaseSkeleton, GridSectionSkeleton } from './components/SectionSkeleton';
 
 export default function App() {
-  const [rackFocusState, setRackFocusState] = useState(() => {
-    if (typeof window === 'undefined') return 'crisp';
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 'crisp';
-    try {
-      return sessionStorage.getItem('introPlayed') === 'true' ? 'crisp' : 'blurred';
-    } catch {
-      return 'crisp';
-    }
-  });
-
-  const handleShutterOpen = useCallback(() => {
-    setRackFocusState('crisp');
-  }, []);
-
   return (
     <>
-      <CinemaBootSequence onShutterOpen={handleShutterOpen} />
-
       {/* Skip link: visually hidden until focused (first tab stop). */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[10000] focus:px-4 focus:py-2 focus:rounded-full focus:bg-ink-primary focus:text-cream focus:text-sm focus:font-medium"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-full focus:bg-ink-primary focus:text-cream focus:text-sm focus:font-medium"
       >
         Lewati ke konten utama
       </a>
       <Navbar />
       <main id="main-content" tabIndex={-1} className="relative pt-28 sm:pt-36 outline-none">
-        <Hero rackFocusState={rackFocusState} />
+        <Hero />
         <About />
         <Stats />
-        <Suspense fallback={<SectionFallback minHeight="min-h-[1600px] sm:min-h-[1500px]" />}>
+        <Suspense fallback={<ShowcaseSkeleton />}>
           <Showcase />
         </Suspense>
-        <Suspense fallback={<SectionFallback minHeight="min-h-[1400px] sm:min-h-[1300px]" />}>
+        <Suspense fallback={<GridSectionSkeleton rows={4} />}>
           <Journey />
         </Suspense>
-        <Suspense fallback={<SectionFallback minHeight="min-h-[1200px] sm:min-h-[700px]" />}>
+        <Suspense fallback={<GridSectionSkeleton rows={3} />}>
           <Testimonials />
         </Suspense>
-        <Suspense fallback={<SectionFallback minHeight="min-h-[1300px] sm:min-h-[900px]" />}>
+        <Suspense fallback={<GridSectionSkeleton rows={6} />}>
           <Tools />
         </Suspense>
       </main>
