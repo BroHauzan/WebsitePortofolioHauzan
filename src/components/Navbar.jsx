@@ -13,6 +13,7 @@
 // ============================================================
 
 import { useEffect, useState } from 'react';
+import { openCommandPalette } from '../utils/paletteEvents';
 
 const navLinks = [
   { href: '#about', label: 'Cerita' },
@@ -56,7 +57,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 nav-frosted-light transition-all duration-300">
+    <header className="fixed top-0 inset-x-0 z-40 nav-frosted-light transition-all duration-300">
       <div className="max-w-7xl mx-auto px-6 sm:px-10 h-16 sm:h-20 flex items-center justify-between">
         <a aria-label="Beranda Hauzan Naufal" className="flex items-center gap-2.5 text-ink-primary hover:opacity-80 transition-opacity focus-ring rounded" href="#home">
           <span className="font-display font-semibold text-lg tracking-tight">Hauzan Naufal</span>
@@ -70,8 +71,20 @@ export default function Navbar() {
             </a>
           ))}
         </nav>
-        {/* Action CTA Button (desktop) */}
-        <div className="hidden lg:block">
+        {/* Actions (desktop): Search Cmd+K & CTA Button */}
+        <div className="hidden lg:flex items-center gap-3">
+          <button
+            type="button"
+            onClick={openCommandPalette}
+            aria-label="Cari dan buka Command Palette (Cmd+K)"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-cream-border bg-white/80 hover:bg-white text-ink-muted hover:text-ink-primary hover:border-slate-400 transition-all text-xs font-mono focus-ring shadow-sm"
+          >
+            <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span className="text-[11px]">Cari...</span>
+            <kbd className="px-1.5 py-0.5 text-[9px] uppercase font-mono font-medium text-slate-500 bg-cream-subtle border border-cream-border rounded">⌘K</kbd>
+          </button>
           <a className="text-xs px-5 py-2.5 rounded-full bg-ink-primary text-cream font-medium hover:bg-slate-800 transition-colors inline-flex items-center gap-2 focus-ring" href="#contact">
             <span>Hubungi</span>
             <svg aria-hidden="true" className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -79,25 +92,40 @@ export default function Navbar() {
             </svg>
           </a>
         </div>
-        {/* Hamburger trigger — mobile only, 44x44px touch target */}
-        <button
-          aria-controls="mobile-nav-drawer"
-          aria-expanded={open}
-          aria-label={open ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
-          className="lg:hidden w-11 h-11 inline-flex items-center justify-center rounded-lg text-ink-primary hover:bg-ink-primary/5 transition-colors focus-ring"
-          type="button"
-          onClick={() => setOpen((prev) => !prev)}
-        >
-          {open ? (
-            <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" strokeLinejoin="round"></path>
+        {/* Mobile action buttons: Search + Hamburger */}
+        <div className="lg:hidden flex items-center gap-1">
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              openCommandPalette();
+            }}
+            aria-label="Buka pencarian dan Command Palette"
+            className="w-11 h-11 inline-flex items-center justify-center rounded-lg text-ink-primary hover:bg-ink-primary/5 transition-colors focus-ring"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-          ) : (
-            <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
-              <path d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" strokeLinecap="round" strokeLinejoin="round"></path>
-            </svg>
-          )}
-        </button>
+          </button>
+          <button
+            aria-controls="mobile-nav-drawer"
+            aria-expanded={open}
+            aria-label={open ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
+            className="w-11 h-11 inline-flex items-center justify-center rounded-lg text-ink-primary hover:bg-ink-primary/5 transition-colors focus-ring"
+            type="button"
+            onClick={() => setOpen((prev) => !prev)}
+          >
+            {open ? (
+              <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+                <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" strokeLinejoin="round"></path>
+              </svg>
+            ) : (
+              <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24">
+                <path d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" strokeLinecap="round" strokeLinejoin="round"></path>
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
       {/* Mobile drawer — conditional render keeps aria-expanded truthful */}
       {open && (
@@ -106,6 +134,22 @@ export default function Navbar() {
           id="mobile-nav-drawer"
         >
           <nav aria-label="Navigasi Mobile" className="max-w-7xl mx-auto px-6 sm:px-10 py-5">
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                openCommandPalette();
+              }}
+              className="w-full flex items-center justify-between px-3.5 py-2.5 mb-3 rounded-lg border border-cream-border bg-white text-xs font-mono text-ink-muted hover:text-ink-primary transition-colors focus-ring"
+            >
+              <span className="flex items-center gap-2 font-sans font-medium text-ink-primary">
+                <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span>Buka Command Palette</span>
+              </span>
+              <kbd className="px-1.5 py-0.5 text-[10px] uppercase font-mono text-slate-500 bg-cream-subtle border border-cream-border rounded">⌘K</kbd>
+            </button>
             <ul className="flex flex-col gap-1 text-sm uppercase tracking-[0.12em] font-medium text-ink-muted">
               {navLinks.map((link) => (
                 <li key={link.href}>

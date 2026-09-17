@@ -83,7 +83,7 @@ export default function useCoverflow({
 
       const catKey = card.dataset.category;
       const ctaLink = card.querySelector('.card-action-link');
-      if (ctaLink && catKey && CATEGORY_DESTINATIONS[catKey]) {
+      if (ctaLink && ctaLink.tagName === 'A' && catKey && CATEGORY_DESTINATIONS[catKey]) {
         ctaLink.setAttribute('href', CATEGORY_DESTINATIONS[catKey]);
       }
 

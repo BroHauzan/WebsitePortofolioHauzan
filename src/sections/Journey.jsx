@@ -3,6 +3,7 @@
 // ============================================================
 
 import journeyEntries from '../data/journeyData';
+import CameraReticleLock from '../components/CameraReticleLock';
 
 const DOT_DEFAULT = 'absolute -left-[31px] sm:-left-[47px] top-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-slate-400';
 const DOT_HIGHLIGHT = 'absolute -left-[31px] sm:-left-[47px] top-1.5 w-3.5 h-3.5 rounded-full bg-white border-2 border-slate-800';
@@ -23,9 +24,10 @@ export default function Journey() {
       <div className="relative border-l border-cream-border pl-6 sm:pl-10 space-y-10">
         {journeyEntries.map((entry) => {
           if (entry.variant === 'featured') {
-            // 2026 highlighted card (matches source exactly)
+            // 2026 highlighted card (matches source exactly) with AF Reticle Lock
             return (
-              <div key={entry.year} className="relative p-5 bg-white border border-slate-900 rounded-xl">
+              <div key={entry.year} className="relative group p-5 bg-white border border-slate-900 rounded-xl overflow-hidden focus-ring">
+                <CameraReticleLock badgePosition="top-right" showCrosshair={false} className="rounded-xl" />
                 <div aria-hidden="true" className={DOT_FEATURED}></div>
                 <span className="text-xs font-mono tracking-wider text-ink-primary font-semibold uppercase">{entry.year}</span>
                 <h3 className="font-display text-base sm:text-lg font-semibold text-ink-primary">{entry.title}</h3>

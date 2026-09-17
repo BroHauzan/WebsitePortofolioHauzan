@@ -1,4 +1,6 @@
-import { PersonIcon } from '../components/Icons';
+import { useState, useRef, useEffect } from 'react';
+import ViewfinderFrame from '../components/ViewfinderFrame';
+import { copyToClipboard } from '../utils/toast';
 
 // ============================================================
 // SECTION 2: ABOUT ME (Editorial Magazine Storytelling)
@@ -12,20 +14,35 @@ const socialPills = [
 ];
 
 export default function About() {
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const copyTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
+
+  const handleCopyEmail = async () => {
+    const ok = await copyToClipboard(
+      'hauzannaufal2008@gmail.com',
+      'Email hauzannaufal2008@gmail.com berhasil disalin ke papan klip!'
+    );
+    if (ok) {
+      setCopiedEmail(true);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopiedEmail(false), 2500);
+    }
+  };
+
   return (
     <section className="border-t border-cream-border py-20 sm:py-32 max-w-7xl mx-auto px-6 sm:px-10" id="about">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
         <div className="lg:col-span-5">
           <div className="sticky top-28">
-            <div className="bg-white border border-cream-border rounded-xl overflow-hidden p-2">
-              <div aria-label="Foto dokumentasi BTS Hauzan Naufal di Lumajang" className="aspect-[3/4] w-full overflow-hidden rounded-lg bg-slate-100" role="img">
-                <div className="w-full h-full bg-cream-subtle flex flex-col items-center justify-center p-6 text-center border border-dashed border-cream-border rounded-lg relative overflow-hidden select-none">
-                  <div className="w-12 h-12 rounded-full border border-[#c6c6cd] flex items-center justify-center text-slate-600 mb-3 bg-white/70">
-                    <PersonIcon />
-                  </div>
-                  <span className="font-display font-medium text-slate-800 text-sm sm:text-base tracking-tight mb-1">Placeholder Foto Dokumentasi / BTS</span>
-                  <span className="text-[11px] font-mono uppercase tracking-eyebrow text-slate-600">3:4 Portrait · Visual Direction</span>
-                </div>
+            <div className="bg-white border border-cream-border rounded-xl overflow-hidden p-2 shadow-sm">
+              <div className="aspect-[3/4] w-full overflow-hidden rounded-lg bg-slate-950">
+                <ViewfinderFrame mode="portrait" />
               </div>
             </div>
             <p className="mt-4 text-xs text-ink-muted tracking-normal leading-relaxed text-center sm:text-left">
@@ -57,9 +74,29 @@ export default function About() {
             </p>
           </div>
           <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap">
-            <a className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-ink-primary text-slate-50 text-sm font-medium hover:bg-ink-secondary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2" href="mailto:hauzannaufal2008@gmail.com">
-              hauzannaufal2008@gmail.com
-            </a>
+            <button
+              type="button"
+              onClick={handleCopyEmail}
+              aria-label="Salin alamat email hauzannaufal2008@gmail.com"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-ink-primary text-slate-50 text-sm font-medium hover:bg-ink-secondary transition-all focus-ring active:scale-95"
+            >
+              <span>hauzannaufal2008@gmail.com</span>
+              {copiedEmail ? (
+                <span className="inline-flex items-center gap-1 text-emerald-300 text-xs font-mono">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>Tersalin!</span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-slate-300 text-xs font-mono">
+                  <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  <span>Salin</span>
+                </span>
+              )}
+            </button>
             <div className="flex flex-wrap items-center gap-2">
               {socialPills.map((pill) => (
                 <a key={pill.href} className="border border-slate-300 rounded-full px-4 py-1.5 text-sm font-medium text-slate-800 hover:border-slate-900 transition-colors bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 focus-visible:ring-offset-2" href={pill.href} rel="noopener noreferrer" target="_blank">

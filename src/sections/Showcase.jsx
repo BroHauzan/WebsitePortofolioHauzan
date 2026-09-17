@@ -1,7 +1,11 @@
-import { useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import showcaseCategories from '../data/showcaseData';
+import productionBriefings from '../data/briefingsData';
 import { PhotographyIcon, showcaseIcons } from '../components/Icons';
 import useCoverflow from '../hooks/useCoverflow';
+import ProductionBriefingModal from '../components/ProductionBriefingModal';
+import CameraReticleLock from '../components/CameraReticleLock';
+import { BRIEFING_OPEN_EVENT, consumePendingBriefing } from '../utils/briefingEvents';
 
 // ============================================================
 // SECTION 4: SHOWCASE KARYA (3D Circular Coverflow Carousel)
@@ -19,6 +23,7 @@ function CategoryIcon({ categoryKey, className }) {
 }
 
 export default function Showcase() {
+  const [activeBriefing, setActiveBriefing] = useState(null);
   const sectionRef = useRef(null);
   const trackRef = useRef(null);
   const stageRef = useRef(null);
@@ -26,6 +31,24 @@ export default function Showcase() {
   const dotsRef = useRef([]);
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+
+  // Listen for global open briefing events and consume any pending briefing on mount
+  useEffect(() => {
+    const pending = consumePendingBriefing();
+    if (pending && productionBriefings[pending]) {
+      setActiveBriefing(productionBriefings[pending]);
+    }
+
+    const handleOpen = (e) => {
+      const id = e.detail?.id;
+      if (id && productionBriefings[id]) {
+        setActiveBriefing(productionBriefings[id]);
+      }
+    };
+
+    window.addEventListener(BRIEFING_OPEN_EVENT, handleOpen);
+    return () => window.removeEventListener(BRIEFING_OPEN_EVENT, handleOpen);
+  }, []);
 
   const { activeIndex, prev, next, select, handleCardClick, handleCardKeyDown } =
     useCoverflow({
@@ -85,7 +108,7 @@ export default function Showcase() {
               ref={(el) => { cardsRef.current[i] = el; }}
               aria-label={`Koleksi ${i + 1} dari ${N}: ${category.title}`}
               aria-roledescription="slide"
-              className="coverflow-card-item w-[320px] sm:w-[360px] md:w-[380px] -ml-[160px] sm:-ml-[180px] md:-ml-[190px] -mt-[245px] sm:-mt-[255px] bg-white border border-cream-border rounded-2xl overflow-hidden cursor-pointer focus-ring"
+              className="coverflow-card-item relative group w-[320px] sm:w-[360px] md:w-[380px] -ml-[160px] sm:-ml-[180px] md:-ml-[190px] -mt-[245px] sm:-mt-[255px] bg-white border border-cream-border rounded-2xl overflow-hidden cursor-pointer focus-ring"
               data-category={category.key}
               data-index={i}
               role="group"
@@ -94,6 +117,9 @@ export default function Showcase() {
               onKeyDown={(e) => handleCardKeyDown(e, i)}
             >
               <div className="aspect-[16/10] bg-cream-subtle border-b border-cream-border relative overflow-hidden flex items-center justify-center p-6 text-center">
+                {/* Camera AF Reticle Target on Hover/Focus — locks precisely on visual lens */}
+                <CameraReticleLock badgePosition="top-left" className="rounded-t-2xl" />
+
                 <div className="flex flex-col items-center">
                   <div className="w-12 h-12 rounded-full border border-slate-300 bg-white/80 flex items-center justify-center text-slate-600 mb-3 shadow-sm">
                     <CategoryIcon categoryKey={category.key} className="w-6 h-6" />
@@ -112,13 +138,23 @@ export default function Showcase() {
                 <p className="text-xs text-ink-muted leading-relaxed mb-4">{category.description}</p>
                 <div className="flex items-center justify-between pt-3 border-t border-cream-border text-xs font-medium text-ink-primary">
                   <span className="text-[11px] font-mono text-ink-muted">{category.tools}</span>
-                  <a
-                    className="card-action-link inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform text-slate-900 font-semibold hover:underline focus-ring rounded"
-                    href={category.ctaHref}
-                    tabIndex={i === 0 ? undefined : -1}
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (i !== activeIndex) {
+                        select(i);
+                        return;
+                      }
+                      if (productionBriefings[category.key]) {
+                        setActiveBriefing(productionBriefings[category.key]);
+                      }
+                    }}
+                    className="card-action-link inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform text-slate-900 font-semibold hover:underline focus-ring rounded text-xs"
+                    tabIndex={i === activeIndex ? 0 : -1}
                   >
                     {category.ctaLabel}
-                  </a>
+                  </button>
                 </div>
               </div>
             </div>
@@ -195,30 +231,88 @@ export default function Showcase() {
             <h3 className="text-[11px] font-semibold tracking-eyebrow uppercase text-ink-muted">KATALOG TERBUKA: VIDEOGRAFI PILIHAN</h3>
             <p className="text-xs text-ink-muted mt-0.5">Dokumentasi utama yang diproduksi bersama tim Media Center &amp; OSIS IT Pubdok.</p>
           </div>
-          <a className="text-xs font-semibold text-slate-900 hover:text-slate-600 transition-colors inline-flex items-center gap-1.5 self-start sm:self-auto focus-ring rounded" href="#works">
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById('carousel-track')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="text-xs font-semibold text-slate-900 hover:text-slate-600 transition-colors inline-flex items-center gap-1.5 self-start sm:self-auto focus-ring rounded"
+          >
             <span>Jelajahi Galeri Penuh</span>
-            <span aria-hidden="true">↗</span>
-          </a>
+            <span aria-hidden="true">↑</span>
+          </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs">
-          <div className="border-l border-cream-border pl-4">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-ink-muted block mb-1">Live Concert &amp; Stage</span>
-            <h4 className="text-ink-primary font-semibold text-sm block mb-1">Dies Natalis Smaga: Simfoni Cahaya</h4>
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => setActiveBriefing(productionBriefings['dies-natalis'])}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setActiveBriefing(productionBriefings['dies-natalis']);
+              }
+            }}
+            className="relative border-l-2 border-cream-border hover:border-slate-900 pl-4 py-2.5 cursor-pointer transition-all hover:bg-cream-subtle/70 rounded-r-lg group focus-ring overflow-hidden"
+          >
+            <CameraReticleLock badgePosition="bottom-right" showCrosshair={false} className="rounded-r-lg" />
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-ink-muted">Live Concert &amp; Stage</span>
+              <span className="text-[10px] font-mono text-slate-900 opacity-0 group-hover:opacity-100 transition-opacity">Briefing ↗</span>
+            </div>
+            <h4 className="text-ink-primary font-semibold text-sm block mb-1 group-hover:text-slate-900">Dies Natalis Smaga: Simfoni Cahaya</h4>
             <p className="text-ink-muted leading-relaxed">Coverage dokumentasi acara puncak festival tahunan, konser bintang tamu, dan teaser pembuka.</p>
           </div>
-          <div className="border-l border-cream-border pl-4">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-ink-muted block mb-1">Recruitment &amp; Showcase</span>
-            <h4 className="text-ink-primary font-semibold text-sm block mb-1">Profil Ekstrakurikuler Multimedia</h4>
+
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => setActiveBriefing(productionBriefings['profil-ekskul'])}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setActiveBriefing(productionBriefings['profil-ekskul']);
+              }
+            }}
+            className="relative border-l-2 border-cream-border hover:border-slate-900 pl-4 py-2.5 cursor-pointer transition-all hover:bg-cream-subtle/70 rounded-r-lg group focus-ring overflow-hidden"
+          >
+            <CameraReticleLock badgePosition="bottom-right" showCrosshair={false} className="rounded-r-lg" />
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-ink-muted">Recruitment &amp; Showcase</span>
+              <span className="text-[10px] font-mono text-slate-900 opacity-0 group-hover:opacity-100 transition-opacity">Briefing ↗</span>
+            </div>
+            <h4 className="text-ink-primary font-semibold text-sm block mb-1 group-hover:text-slate-900">Profil Ekstrakurikuler Multimedia</h4>
             <p className="text-ink-muted leading-relaxed">Rangkaian video promosi organisasi dan pengenalan divisi ekstrakurikuler untuk MPLS.</p>
           </div>
-          <div className="border-l border-cream-border pl-4">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-ink-muted block mb-1">Ceremonial Broadcast</span>
-            <h4 className="text-ink-primary font-semibold text-sm block mb-1">Pelepasan Wisuda Angkatan 64</h4>
+
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => setActiveBriefing(productionBriefings['pelepasan-wisuda'])}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setActiveBriefing(productionBriefings['pelepasan-wisuda']);
+              }
+            }}
+            className="relative border-l-2 border-cream-border hover:border-slate-900 pl-4 py-2.5 cursor-pointer transition-all hover:bg-cream-subtle/70 rounded-r-lg group focus-ring overflow-hidden"
+          >
+            <CameraReticleLock badgePosition="bottom-right" showCrosshair={false} className="rounded-r-lg" />
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-ink-muted">Ceremonial Broadcast</span>
+              <span className="text-[10px] font-mono text-slate-900 opacity-0 group-hover:opacity-100 transition-opacity">Briefing ↗</span>
+            </div>
+            <h4 className="text-ink-primary font-semibold text-sm block mb-1 group-hover:text-slate-900">Pelepasan Wisuda Angkatan 64</h4>
             <p className="text-ink-muted leading-relaxed">Video kenangan angkatan, siaran multicam seremonial kelulusan, dan wawancara wisudawan.</p>
           </div>
         </div>
       </div>
+
+      {/* Production Briefing Modal / Slide-over Drawer */}
+      <ProductionBriefingModal
+        briefing={activeBriefing}
+        onClose={() => setActiveBriefing(null)}
+      />
     </section>
   );
 }
-

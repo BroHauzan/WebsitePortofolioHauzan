@@ -1,3 +1,6 @@
+import { useState, useRef, useEffect } from 'react';
+import { copyToClipboard } from '../utils/toast';
+
 // ============================================================
 // FOOTER: Deep Midnight Navy Block with Structured Columns
 // id="contact" preserved so the navbar CTA anchor keeps working.
@@ -27,6 +30,27 @@ const footerLinkFocus =
   'hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 rounded';
 
 export default function Footer() {
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const copyTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    };
+  }, []);
+
+  const handleCopyEmail = async () => {
+    const ok = await copyToClipboard(
+      'hauzannaufal2008@gmail.com',
+      'Email hauzannaufal2008@gmail.com berhasil disalin ke papan klip!'
+    );
+    if (ok) {
+      setCopiedEmail(true);
+      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+      copyTimeoutRef.current = setTimeout(() => setCopiedEmail(false), 2500);
+    }
+  };
+
   return (
     <footer className="w-full bg-midnight text-cream border-t border-slate-800 mt-20" id="contact">
       <div className="max-w-7xl mx-auto px-6 sm:px-10 py-16 lg:py-20">
@@ -59,10 +83,31 @@ export default function Footer() {
             </div>
             <div>
               <h3 className="text-xs font-semibold tracking-eyebrow uppercase text-slate-400 mb-4">Contact</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-3">Terbuka untuk diskusi proyek liputan, kolaborasi konten, dan eksplorasi visual.</p>
-              <a className="text-white font-medium text-xs block mb-4 hover:underline break-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 rounded" href="mailto:hauzannaufal2008@gmail.com">
-                hauzannaufal2008@gmail.com
-              </a>
+              <button
+                type="button"
+                onClick={handleCopyEmail}
+                aria-label="Salin alamat email hauzannaufal2008@gmail.com"
+                className="text-white font-medium text-xs flex items-center gap-2 mb-4 group hover:text-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 rounded"
+              >
+                <span className="underline decoration-slate-500 group-hover:decoration-white underline-offset-2 break-all">
+                  hauzannaufal2008@gmail.com
+                </span>
+                {copiedEmail ? (
+                  <span className="inline-flex items-center gap-1 text-emerald-400 text-[10px] font-mono bg-emerald-950/80 px-1.5 py-0.5 rounded border border-emerald-500/40 flex-shrink-0">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Tersalin!</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-slate-400 group-hover:text-slate-200 text-[10px] font-mono bg-slate-800/90 px-1.5 py-0.5 rounded border border-slate-700 flex-shrink-0">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span>Salin</span>
+                  </span>
+                )}
+              </button>
               <ul className="space-y-2 text-xs text-slate-400">
                 {socialLinks.map((link) => (
                   <li key={link.href}>

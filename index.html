@@ -41,6 +41,110 @@
          gagal-match dan browser sekadar mengabaikannya (fallback aman, tanpa error). -->
     <link rel="preload" as="font" type="font/woff2" crossorigin href="https://fonts.gstatic.com/s/fraunces/v38/6NU58FyLNQOQZAnv9ZwNjucMHVn85Ni7emAe9lKqZTnbB-gzTK0K1ChjeveQ.woff2" />
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..800&amp;family=Geist:wght@300;400;500;600&amp;display=swap" rel="stylesheet" />
+    <!-- Structured Data (JSON-LD): Person, WebSite, ProfilePage, & CreativeWork -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://portofolio-hauzan-alpha.vercel.app/#person",
+            "name": "Hauzan Naufal",
+            "givenName": "Hauzan",
+            "familyName": "Naufal",
+            "gender": "https://schema.org/Male",
+            "jobTitle": "Visual Storyteller, Videografer & Ketua Media Center SMAN 1 Lumajang",
+            "description": "Ketua Media Center SMAN 1 Lumajang & OSIS IT Pubdok (2025/2026). Visual storyteller dengan keahlian fotografi panggung 35mm, sinematografi acara, motion graphics, dan rekayasa web interaktif.",
+            "url": "https://portofolio-hauzan-alpha.vercel.app/",
+            "image": "https://portofolio-hauzan-alpha.vercel.app/assets/images/og-cover.jpg",
+            "email": "mailto:hauzannaufal2008@gmail.com",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Lumajang",
+              "addressRegion": "Jawa Timur",
+              "addressCountry": "ID"
+            },
+            "affiliation": {
+              "@type": "EducationalOrganization",
+              "name": "SMAN 1 Lumajang",
+              "url": "https://sman1lumajang.sch.id"
+            },
+            "memberOf": [
+              {
+                "@type": "Organization",
+                "name": "Media Center SMAN 1 Lumajang",
+                "roleName": "Ketua Media Center"
+              },
+              {
+                "@type": "Organization",
+                "name": "OSIS SMAN 1 Lumajang",
+                "roleName": "Sekbid 9 IT & Pubdok"
+              }
+            ],
+            "sameAs": [
+              "https://www.instagram.com/brohauzan/",
+              "https://www.tiktok.com/@hauzanbro",
+              "https://www.youtube.com/@HauzanBro",
+              "https://github.com/BroHauzan"
+            ],
+            "knowsAbout": [
+              "Photography",
+              "Videography",
+              "Motion Graphics",
+              "Cinematography",
+              "Short Film Direction",
+              "Web Development",
+              "DaVinci Resolve Studio",
+              "Adobe Premiere Pro",
+              "Adobe After Effects",
+              "Adobe Lightroom"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://portofolio-hauzan-alpha.vercel.app/#website",
+            "url": "https://portofolio-hauzan-alpha.vercel.app/",
+            "name": "Hauzan Naufal — Portfolio & Arsip Visual Multimedia",
+            "description": "Portofolio Hauzan Naufal - Visual Storyteller, Ketua Media Center SMAN 1 Lumajang & OSIS IT Pubdok. Menampilkan karya fotografi, videografi, dan motion graphics.",
+            "inLanguage": "id-ID",
+            "publisher": {
+              "@id": "https://portofolio-hauzan-alpha.vercel.app/#person"
+            }
+          },
+          {
+            "@type": "ProfilePage",
+            "@id": "https://portofolio-hauzan-alpha.vercel.app/#webpage",
+            "url": "https://portofolio-hauzan-alpha.vercel.app/",
+            "name": "Hauzan Naufal — Portfolio & Arsip Visual Multimedia",
+            "isPartOf": {
+              "@id": "https://portofolio-hauzan-alpha.vercel.app/#website"
+            },
+            "about": {
+              "@id": "https://portofolio-hauzan-alpha.vercel.app/#person"
+            },
+            "mainEntity": {
+              "@id": "https://portofolio-hauzan-alpha.vercel.app/#person"
+            }
+          },
+          {
+            "@type": "CreativeWork",
+            "@id": "https://portofolio-hauzan-alpha.vercel.app/#portfolio",
+            "name": "Arsip Visual & Karya Multimedia Hauzan Naufal",
+            "creator": {
+              "@id": "https://portofolio-hauzan-alpha.vercel.app/#person"
+            },
+            "genre": [
+              "Live Concert Coverage",
+              "Stage Photography",
+              "School Documentary",
+              "Motion Graphics",
+              "Web Craft"
+            ],
+            "about": "Dokumentasi visual, produksi video aftermovie festival sekolah, profil organisasi, dan siaran seremonial SMAN 1 Lumajang."
+          }
+        ]
+      }
+    </script>
   </head>
   <body class="selection:bg-slate-900 selection:text-white bg-[#fbfbf9] text-[#0f172a]">
     <div id="root"></div>
