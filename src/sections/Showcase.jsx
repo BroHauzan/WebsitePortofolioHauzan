@@ -73,7 +73,7 @@ export default function Showcase() {
 
 
       {/* 3D Circular Coverflow Carousel Stage (5 Categories) */}
-      <div className="relative w-full py-6 sm:py-10 mb-4 overflow-x-clip" id="carousel-track" ref={trackRef}>
+      <div className="relative w-full py-6 sm:py-10 mb-4 overflow-x-clip touch-pan-y" id="carousel-track" ref={trackRef}>
         <div
           className="coverflow-perspective relative w-full h-[510px] sm:h-[530px] flex items-center justify-center select-none"
           id="coverflowStage"

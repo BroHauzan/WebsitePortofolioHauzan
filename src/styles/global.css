@@ -67,6 +67,7 @@ body {
 .coverflow-perspective {
   perspective: 1200px;
   transform-style: preserve-3d;
+  touch-action: pan-y;
 }
 
 .coverflow-card-item {

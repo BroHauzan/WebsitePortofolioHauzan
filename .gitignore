@@ -26,3 +26,4 @@ audit/
 # Kilo agent state (bisa berisi kredensial API)
 .kilo/
 .kilocode/
+.openhands/

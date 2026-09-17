@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { CATEGORY_DESTINATIONS } from '../data/showcaseData';
+import {
+  calculateCardGeometry,
+  calculateCircularDiff,
+  getStepConfig,
+} from '../utils/coverflowMath';
 
 // ============================================================
 // 3D CIRCULAR COVERFLOW — exact port of the original vanilla JS
@@ -14,8 +19,8 @@ import { CATEGORY_DESTINATIONS } from '../data/showcaseData';
 // because preventing vertical scroll bleed during a horizontal swipe
 // is a deliberate behavior of this carousel, and the move handler now
 // returns immediately for `idle` / `vertical-scroll` states so it does
-// the minimum possible work per event. A fully passive listener would
-// require `touch-action` CSS on the stage (global.css — not owned here).
+// the minimum possible work per event. Combined with CSS touch-action: pan-y,
+// the browser handles vertical scroll smoothly while gestures remain crisp.
 //
 // Preserved behaviors:
 // - circular diff math (step/farStep/scale/opacity/blur/rotateY/z/translateZ)
@@ -29,15 +34,6 @@ import { CATEGORY_DESTINATIONS } from '../data/showcaseData';
 // - debounced resize re-layout (100ms)
 // - prefers-reduced-motion branch
 // ============================================================
-
-// Responsive step configuration (identical to the original)
-function getStepConfig() {
-  const isMobile = window.innerWidth < 640;
-  const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
-  const step = isMobile ? 180 : isTablet ? 220 : 260;
-  const farStep = isMobile ? 310 : isTablet ? 380 : 440;
-  return { step, farStep };
-}
 
 export default function useCoverflow({
   total,
@@ -72,39 +68,18 @@ export default function useCoverflow({
   }, []);
 
   // --- Core geometry pass: applies transform/opacity/filter/z-index/ ---
-  // --- box-shadow + aria/tabindex to every card (verbatim math) ---
+  // --- box-shadow + aria/tabindex to every card ---
   const updateCarousel = useCallback(() => {
     const cards = cardsRef.current.filter(Boolean);
     const N = cards.length || total;
     const idx = activeIndexRef.current;
     const reduced = prefersReducedMotionRef.current;
-    const { step, farStep } = getStepConfig();
+    const stepConfig = getStepConfig();
 
     cards.forEach((card, i) => {
-      // Calculate circular diff
-      let diff = i - idx;
-      while (diff > N / 2) diff -= N;
-      while (diff < -N / 2) diff += N;
-
-      const distance = Math.abs(diff);
-      const sign = Math.sign(diff);
-
-      let x = 0;
-      let scale = 1.0;
-      let opacity = 1.0;
-      let blur = 0;
-      let rotateY = 0;
-      let zIndex = 30;
-      let shadow =
-        '0 25px 50px -12px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.08)';
-
-      // A11y: only the active card and its direct neighbours stay in
-      // the accessibility tree and can receive pointer/tab focus.
-      // Cards further away are blurred to 0.32 opacity, so an
-      // accidental click on them is not prevented by the visual
-      // change — they are hidden from assistive tech and made inert.
-      // `inert` also removes the card's CTA link from the tab order.
-      const isNearActive = distance <= 1;
+      const diff = calculateCircularDiff(i, idx, N);
+      const geometry = calculateCardGeometry(diff, stepConfig, reduced);
+      const { opacity, blur, zIndex, shadow, transform, isNearActive } = geometry;
 
       const catKey = card.dataset.category;
       const ctaLink = card.querySelector('.card-action-link');
@@ -115,52 +90,20 @@ export default function useCoverflow({
       const catHeading = card.querySelector('h3');
       const catTitle = catHeading ? catHeading.textContent.trim() : `0${i + 1}`;
 
+      card.setAttribute('aria-label', `Koleksi ${i + 1} dari ${N}: ${catTitle}`);
+      card.style.pointerEvents = 'auto';
+
       if (diff === 0) {
         // Active card
-        x = 0;
-        scale = 1.0;
-        opacity = 1.0;
-        blur = 0;
-        rotateY = 0;
-        zIndex = 30;
-        shadow =
-          '0 25px 50px -12px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(15, 23, 42, 0.08)';
         card.setAttribute('aria-current', 'true');
-        card.setAttribute('aria-label', `Koleksi ${i + 1} dari ${N}: ${catTitle}`);
         card.setAttribute('tabindex', '0');
-        card.style.pointerEvents = 'auto';
         if (ctaLink) {
           ctaLink.removeAttribute('tabindex');
         }
-      } else if (distance === 1) {
-        // Nearest cards left or right
-        x = sign * step;
-        scale = 0.86;
-        opacity = 0.65;
-        blur = 2.5;
-        rotateY = -sign * 9;
-        zIndex = 20;
-        shadow = '0 15px 30px -10px rgba(15, 23, 42, 0.12)';
-        card.removeAttribute('aria-current');
-        card.setAttribute('aria-label', `Koleksi ${i + 1} dari ${N}: ${catTitle}`);
-        card.setAttribute('tabindex', '-1');
-        card.style.pointerEvents = 'auto';
-        if (ctaLink) {
-          ctaLink.setAttribute('tabindex', '-1');
-        }
       } else {
-        // Far cards
-        x = sign * farStep;
-        scale = 0.72;
-        opacity = 0.32;
-        blur = 6;
-        rotateY = -sign * 15;
-        zIndex = 10;
-        shadow = 'none';
+        // Inactive cards (near or far)
         card.removeAttribute('aria-current');
-        card.setAttribute('aria-label', `Koleksi ${i + 1} dari ${N}: ${catTitle}`);
         card.setAttribute('tabindex', '-1');
-        card.style.pointerEvents = 'auto';
         if (ctaLink) {
           ctaLink.setAttribute('tabindex', '-1');
         }
@@ -181,17 +124,7 @@ export default function useCoverflow({
         card.setAttribute('inert', '');
       }
 
-      if (reduced) {
-        rotateY = 0;
-        blur = 0;
-        scale = diff === 0 ? 1.0 : 0.85;
-        card.style.transform = `translate3d(${x}px, 0, 0) scale(${scale})`;
-      } else {
-        card.style.transform = `translate3d(${x}px, 0, ${
-          distance === 0 ? '0px' : distance === 1 ? '-90px' : '-190px'
-        }) scale(${scale}) rotateY(${rotateY}deg)`;
-      }
-
+      card.style.transform = transform;
       card.style.opacity = `${opacity}`;
       card.style.filter = blur > 0 && !reduced ? `blur(${blur}px)` : 'none';
       card.style.zIndex = `${zIndex}`;
